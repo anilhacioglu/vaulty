@@ -159,7 +159,7 @@ Herhangi bir kuruluma ihtiyaç duymadan, projenin kök dizinindeki `Vaulty.exe` 
 
 1. Repoyu klonlayın:
 ```bash
-git clone https://github.com/KULLANICI_ADINIZ/vaulty.git
+git clone https://github.com/anilhacioglu/vaulty.git
 cd vaulty
 ```
 
@@ -195,3 +195,4 @@ En son sürüm notları, yeni eklenen özellikler ve hata düzeltmeleri için [C
 ## 📄 Lisans (License)
 
 Bu proje [MIT Lisansı](LICENSE) kapsamında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakabilirsiniz.
+
