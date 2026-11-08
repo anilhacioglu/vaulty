@@ -1,0 +1,541 @@
+/* =========================================================================
+   VAULTY CARDS STYLES (Cüzdan Kartları, Kredi Kartı Limit Barları & Detay Masası)
+   ========================================================================= */
+
+/* KPI Kartları */
+.dc-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dc-kpi-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dc-kpi-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.dc-kpi-card__value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0F172A;
+}
+
+.dc-kpi-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.dc-kpi-badge--emerald {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+.dc-kpi-badge--rose {
+  background: #FFF1F2;
+  color: #E11D48;
+}
+
+.dc-kpi-badge--blue {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+/* Sol Liste: Cüzdan Kartları Sarmalayıcısı */
+.wallet-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+/* Sol Liste: Ortak Cüzdan Kartları (Unified Card Shell) */
+.wallet-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 16px 20px;
+  min-height: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3), 0 4px 6px -2px rgba(15, 23, 42, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  overflow: hidden;
+  outline: none;
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.wallet-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 14px 30px -6px rgba(15, 23, 42, 0.38), 0 6px 10px -2px rgba(15, 23, 42, 0.2);
+}
+
+.wallet-card.is-selected {
+  outline: none !important;
+  border-color: #2563EB !important;
+  box-shadow: inset 0 0 0 2px #2563EB, 0 4px 16px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* 1. Debit / Banka Kartı (Derin safir antrasit gradyan) */
+.wallet-card--debit {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: #F8FAFC;
+}
+
+.wallet-card--debit.is-selected {
+  outline: none !important;
+  border-color: #38BDF8 !important;
+  box-shadow: inset 0 0 0 2px #38BDF8, 0 4px 16px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* 2. Nakit Kasa / Fiziki Cüzdan (Koyu mat zümrüt gradyan) */
+.wallet-card--cash {
+  background: linear-gradient(135deg, #064E3B 0%, #022C22 100%);
+  color: #F8FAFC;
+}
+
+.wallet-card--cash.is-selected {
+  outline: none !important;
+  border-color: #10B981 !important;
+  box-shadow: inset 0 0 0 2px #10B981, 0 4px 16px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* 3. Kredi Kartı (Obsidian & Marka Gradyan) */
+.wallet-card--credit {
+  background: var(--cc-bg, linear-gradient(135deg, #1E293B 0%, #0F172A 100%));
+  color: #F8FAFC;
+}
+
+.wallet-card--credit.is-selected {
+  outline: none !important;
+  border-color: #38BDF8 !important;
+  box-shadow: inset 0 0 0 2px #38BDF8, 0 4px 16px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Üst Satır (Row 1: Header) */
+.wc-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.wc-brand-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94A3B8;
+  letter-spacing: 0.01em;
+}
+
+.wallet-card--debit .wc-brand-wrap {
+  color: #CBD5E1;
+}
+
+.wallet-card--cash .wc-brand-wrap {
+  color: #A7F3D0;
+}
+
+.wallet-card--credit .wc-brand-wrap {
+  color: #E2E8F0;
+}
+
+/* Metalik Çipler */
+.wc-chip {
+  width: 26px;
+  height: 19px;
+  border-radius: 4px;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.wc-chip--gold {
+  background: linear-gradient(135deg, #FDE68A 0%, #D97706 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.wc-chip--silver {
+  background: linear-gradient(135deg, #F1F5F9 0%, #94A3B8 50%, #CBD5E1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.wc-chip::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(15, 23, 42, 0.28);
+  border-radius: 2px;
+}
+
+/* Fiziki Cüzdan İkon Rozeti */
+.wc-wallet-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(52, 211, 153, 0.16);
+  color: #34D399;
+  flex-shrink: 0;
+}
+
+.wc-tag-right {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #94A3B8;
+  letter-spacing: 0.02em;
+}
+
+.wc-tag-cash {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6EE7B7;
+  background: rgba(6, 78, 59, 0.6);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  letter-spacing: 0.02em;
+}
+
+/* Orta Satır (Row 2: Core) */
+.wc-row-core {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.wc-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wc-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.wc-amount--emerald {
+  color: #34D399;
+}
+
+/* Alt Satır (Row 3: Bottom) */
+.wc-row-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 28px;
+}
+
+.wc-asset-code {
+  font-size: 12px;
+  font-weight: 600;
+  color: #A7F3D0;
+  letter-spacing: 0.03em;
+}
+
+.wc-iban-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94A3B8;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 140ms ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.wc-iban-copy:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #F8FAFC;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.wc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.wc-pill--emerald {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34D399;
+}
+
+.wc-pill--cash {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6EE7B7;
+}
+
+/* Kredi Kartı Limit İlerleme Çubuğu */
+.wc-credit-meter-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wc-credit-meter-text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.wc-credit-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.wc-credit-fill {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: #38BDF8;
+  transition: width 240ms ease;
+}
+
+.wc-credit-fill.is-high {
+  background: #FB7185;
+}
+
+.wc-row-bottom--credit {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.wc-card-footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.wc-due-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 140ms ease;
+  user-select: none;
+  background: transparent;
+  text-decoration: none;
+}
+
+.wc-due-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
+/* Safe: Nötr gri rozet ("🗓️ Kesime X gün") */
+.wc-due-pill--safe {
+  background: rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #CBD5E1;
+}
+
+/* Warning: Kehribar sarısı rozet (#F59E0B) ("⚡ Ekstre Kesildi • Son X Gün") */
+.wc-due-pill--warning {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #FCD34D;
+}
+
+/* Critical: Soft kırmızı dolgulu rozet (#EF4444) ("⚠️ Son Ödeme: Yarın/Bugün") */
+.wc-due-pill--critical {
+  background: #EF4444;
+  border-color: #DC2626;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Kokpit Mini Cüzdan Kartı */
+.dash-wcard {
+  --mx: 50%; --my: 0%;
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: #FFFFFF !important;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 6px 16px -6px rgba(15, 23, 42, 0.35);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 240ms ease;
+}
+
+.dash-wcard--checking {
+  background: linear-gradient(135deg, #0F2A5F 0%, #2563EB 100%) !important;
+}
+
+.dash-wcard--credit {
+  background: linear-gradient(135deg, #111827 0%, #475569 100%) !important;
+}
+
+.dash-wcard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.18), transparent 60%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.dash-wcard:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 14px 26px -8px rgba(15, 23, 42, 0.45);
+}
+
+.dash-wcard:hover::after {
+  opacity: 1;
+}
+
+.dash-wcard__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.dash-wcard__bank {
+  color: #FFFFFF !important;
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+.dash-wcard__type {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dash-wcard__name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #FFFFFF !important;
+}
+
+.dash-wcard__name em {
+  font-style: normal;
+  margin-left: 6px;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dash-wcard__bal {
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFFFFF !important;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-wcard__limit {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.dash-wcard__track {
+  display: block;
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.dash-wcard__track i {
+  display: block;
+  height: 100%;
+  background: #FBBF24 !important;
+  border-radius: 9999px;
+  transform-origin: left;
+  animation: dashGrowX 900ms 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-wcard__limit-txt {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaulty</title>
+<link rel="icon" type="image/jpeg" href="assets/app-icon.jpg">
+<link rel="apple-touch-icon" href="assets/app-icon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-shell">
+<div class="shell">
+  <!-- 36px Desktop Window Titlebar (Electron-ready) -->
+  <header class="titlebar titlebar--light">
+    <div class="titlebar__left">
+      <img class="titlebar__logo" src="assets/app-icon.jpg" alt="Vaulty" width="18" height="18">
+      <span class="titlebar__title">Vaulty <span style="font-size:10px;font-weight:600;color:#2563EB;background:#EFF6FF;border:1px solid #DBEAFE;padding:1px 5px;border-radius:4px;margin-left:4px;">v1.5.1</span></span>
+    </div>
+    <span class="env env--light"><i class="dot"></i>Yerel Kasa · Hazır</span>
+    <div class="titlebar__controls" aria-label="Pencere kontrolleri">
+      <button class="wc" data-wc="minimize" aria-label="Simge durumuna küçült" title="Simge durumuna küçült">
+        <svg viewBox="0 0 10 10" width="10" height="10"><path d="M1 5h8" stroke="currentColor"/></svg>
+      </button>
+      <button class="wc" data-wc="maximize" aria-label="Ekranı kapla" title="Ekranı kapla">
+        <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1.5" y="1.5" width="7" height="7" fill="none" stroke="currentColor"/></svg>
+      </button>
+      <button class="wc wc--close" data-wc="close" aria-label="Kapat" title="Kapat">
+        <svg viewBox="0 0 10 10" width="10" height="10"><path d="m1 1 8 8M9 1 1 9" stroke="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Seamless Centered Canvas -->
+  <main class="canvas" aria-label="Kasa kimlik doğrulama ekranı">
+    <section class="auth-flow" aria-labelledby="welcome-heading">
+      <!-- 1. User Avatar / Profile Section (104x104) -->
+      <div class="avatar-wrap">
+        <div class="avatar-ring" title="Kasa Hazır / Çevrimdışı Güvenli">
+          <div class="avatar">
+            <svg viewBox="0 0 96 96" width="96" height="96" fill="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="avatarGrad" x1="0" y1="0" x2="96" y2="96" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#EFF6FF"/>
+                  <stop offset="100%" stop-color="#DBEAFE"/>
+                </linearGradient>
+              </defs>
+              <rect width="96" height="96" fill="url(#avatarGrad)"/>
+              <circle cx="48" cy="37" r="15.5" fill="#2563EB" fill-opacity="0.88"/>
+              <path d="M19 83c4.2-15 16.2-22.8 29-22.8S72.8 68 77 83" fill="#2563EB" fill-opacity="0.88"/>
+            </svg>
+          </div>
+          <span class="avatar-status" role="status" aria-label="Kasa Hazır / Çevrimdışı Güvenli"></span>
+        </div>
+      </div>
+
+      <!-- 2. Greeting & Labels -->
+      <header class="identity-header">
+        <h1 id="welcome-heading" class="identity-title">Hoş geldin, Usta</h1>
+        <p class="identity-subtitle">Kişisel finans kasanız kilitli</p>
+      </header>
+
+      <!-- 3. 6-Digit Banking PIN Input Matrix -->
+      <form id="unlockForm" class="unlock-form" novalidate autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div
+          class="pin-matrix"
+          id="pinMatrix"
+          role="group"
+          aria-label="6 Haneli Kasa PIN Kodu"
+          aria-describedby="pinError"
+        >
+          <div class="pin-cell">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="pin_digit_0" aria-label="PIN 1. hane" data-index="0" autofocus>
+            <span class="pin-dot" aria-hidden="true"></span>
+          </div>
+          <div class="pin-cell">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="pin_digit_1" aria-label="PIN 2. hane" data-index="1">
+            <span class="pin-dot" aria-hidden="true"></span>
+          </div>
+          <div class="pin-cell">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="pin_digit_2" aria-label="PIN 3. hane" data-index="2">
+            <span class="pin-dot" aria-hidden="true"></span>
+          </div>
+          <div class="pin-cell">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="pin_digit_3" aria-label="PIN 4. hane" data-index="3">
+            <span class="pin-dot" aria-hidden="true"></span>
+          </div>
+          <div class="pin-cell">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="pin_digit_4" aria-label="PIN 5. hane" data-index="4">
+            <span class="pin-dot" aria-hidden="true"></span>
+          </div>
+          <div class="pin-cell">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="pin_digit_5" aria-label="PIN 6. hane" data-index="5">
+            <span class="pin-dot" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <p class="field-error" id="pinError" role="alert" aria-live="polite"></p>
+
+        <!-- 4. Unlock Button -->
+        <button type="submit" class="unlock-btn" id="unlockBtn">
+          <span class="unlock-btn__text">Kasayı Aç</span>
+          <span class="unlock-btn__spinner" aria-hidden="true"></span>
+        </button>
+
+        <!-- 4b. Test Mode Quick Launch Button -->
+        <button type="button" class="btn-demo-mode" id="demoModeLoginBtn" title="Şifre girmeden örnek test hesabı ile aç">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 2v7.31M14 2v7.31M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0"/>
+          </svg>
+          <span>🧪 Test Hesabı (Demo) ile Giriş Yap</span>
+        </button>
+      </form>
+
+      <!-- 5. Security Footer -->
+      <footer class="security-footer">
+        <span class="security-badge">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5l-8-3Z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          <span>Veriler yerel olarak şifrelenmiştir.</span>
+        </span>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script src="storage.js"></script>
+<script src="shell.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

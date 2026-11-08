@@ -1,0 +1,37 @@
+# Vaulty - Git Ignore Rules
+
+# User Sensitive Data & Vault Database (Never commit personal vault data!)
+vault.json
+*.vault
+*.enc
+*.key
+*.token
+
+# Build Artifacts & Binaries
+bin/
+obj/
+dist/
+src-desktop/bin/
+src-desktop/obj/
+*.pdb
+
+# IDE & Editor Configuration
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary & Log Files
+*.log
+*.tmp
+scratch/

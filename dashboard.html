@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaulty</title>
+<link rel="icon" type="image/jpeg" href="assets/app-icon.jpg">
+<link rel="apple-touch-icon" href="assets/app-icon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components/sidebar/sidebar.css">
+<link rel="stylesheet" href="components/cards/cards.css">
+<link rel="stylesheet" href="components/charts/charts.css">
+<link rel="stylesheet" href="components/tables/tables.css">
+<link rel="stylesheet" href="views/views.css">
+<link rel="stylesheet" href="modals/modals.css">
+<link rel="stylesheet" href="components/recurring/recurring.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- 36px Masaüstü Pencere Başlık Çubuğu -->
+  <header class="titlebar">
+    <div class="titlebar__left">
+      <img class="titlebar__logo" src="assets/app-icon.jpg" alt="Vaulty" width="18" height="18">
+      <span class="titlebar__title">Vaulty <span style="font-size:10px;font-weight:600;color:#2563EB;background:#EFF6FF;border:1px solid #DBEAFE;padding:1px 5px;border-radius:4px;margin-left:4px;">v1.5.1</span></span>
+    </div>
+    <div class="titlebar__center">
+      <span class="env" id="titlebarEnvBadge"><i class="dot"></i>Yerel Kasa · Şifreli</span>
+      
+      <!-- Test / Demo Modu Kontrol Şeridi -->
+      <div class="test-mode-controls" id="testModeControls" style="-webkit-app-region: no-drag !important; display:inline-flex; align-items:center; gap:6px;">
+        <button type="button" class="titlebar-test-btn" id="toggleTestModeBtn" title="Örnek verilerle test hesabına geç">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 2v7.31M14 2v7.31M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0"/>
+          </svg>
+          <span>🧪 Test Hesabı</span>
+        </button>
+        <div class="test-mode-active-bar" id="testModeActiveBar" style="display:none; align-items:center; gap:6px;">
+          <span class="test-pill mono">TEST MODU</span>
+          <button type="button" class="test-action-btn test-action-btn--reset" id="resetTestDataBtn" title="Test verilerini ilk haline sıfırla">
+            🔄 Testi Sıfırla
+          </button>
+          <button type="button" class="test-action-btn test-action-btn--exit" id="exitTestModeBtn" title="Test modunu kapat ve asıl hesabıma dön">
+            ✕ Çıkış
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="titlebar__controls" aria-label="Pencere kontrolleri">
+      <button class="wc" data-wc="minimize" aria-label="Simge durumuna küçült" title="Simge durumuna küçült">
+        <svg viewBox="0 0 10 10" width="10" height="10"><path d="M1 5h8" stroke="currentColor"/></svg>
+      </button>
+      <button class="wc" data-wc="maximize" aria-label="Ekranı kapla" title="Ekranı kapla">
+        <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1.5" y="1.5" width="7" height="7" fill="none" stroke="currentColor"/></svg>
+      </button>
+      <button class="wc wc--close" data-wc="close" aria-label="Kapat" title="Kapat">
+        <svg viewBox="0 0 10 10" width="10" height="10"><path d="m1 1 8 8M9 1 1 9" stroke="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="workspace root-layout" id="app">
+    <!-- Sol Navigasyon Kenar Çubuğu (260px sabit, #F8FAFC, 1px solid #E2E8F0) -->
+    <aside class="sidebar" aria-label="Ana menü">
+      <!-- Blok 1: Marka Başlığı (Vaulty) -->
+      <header class="sidebar__header">
+        <div class="brand">
+          <img class="brand__logo-img" src="assets/vault-logo.png" alt="Vaulty" draggable="false">
+          <span class="brand__name">Vaulty</span>
+        </div>
+      </header>
+
+      <!-- Blok 2: Ana Navigasyon (4 Temel Rota) -->
+      <nav class="nav nav--primary" aria-label="Ana modüller">
+        <a href="#" class="nav__item is-active" aria-current="page" data-view="dashboard" data-title="Genel Bakış">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="9" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="5" rx="1.5"/>
+            <rect x="14" y="12" width="7" height="9" rx="1.5"/>
+            <rect x="3" y="16" width="7" height="5" rx="1.5"/>
+          </svg>
+          <span class="nav__label">Genel Bakış</span>
+        </a>
+        <a href="#" class="nav__item" data-view="transactions" data-title="İşlemler">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 8h16l-4-4"/>
+            <path d="M20 16H4l4 4"/>
+          </svg>
+          <span class="nav__label">İşlemler</span>
+        </a>
+        <a href="#" class="nav__item" data-view="debt" data-title="Borç & Alacak">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v18"/>
+            <path d="M5 7h14"/>
+            <path d="m5 7-3 6h6l-3-6Z"/>
+            <path d="m19 7-3 6h6l-3-6Z"/>
+            <path d="M8 21h8"/>
+          </svg>
+          <span class="nav__label">Borç &amp; Alacak</span>
+        </a>
+        <a href="#" class="nav__item" data-view="assets" data-title="Varlıklarım">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2" y="5" width="20" height="14" rx="2.5"/>
+            <path d="M2 10h20"/>
+            <path d="M6 15h4"/>
+          </svg>
+          <span class="nav__label">Varlıklarım</span>
+        </a>
+        <a href="#" class="nav__item" data-view="planned" data-title="Nakit Akışı Takvimi">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <span class="nav__label">Nakit Akışı Takvimi</span>
+        </a>
+      </nav>
+
+      <!-- Hızlı Araçlar: Tutarları Gizle / Gizlilik Modu -->
+      <div class="sidebar__tools">
+        <button type="button" class="sidebar-privacy-btn" id="privacyToggleBtn" data-action="toggle-privacy" title="Gizlilik Modu (Kısayol: H)" aria-label="Gizlilik Modunu Aç/Kapat">
+          <span class="privacy-btn-icon">
+            <svg class="privacy-icon-eye" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg class="privacy-icon-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+              <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+              <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+              <line x1="2" y1="2" x2="22" y2="22"/>
+            </svg>
+          </span>
+          <span class="privacy-btn-label">Tutarları Gizle</span>
+          <kbd class="privacy-kbd-hint">H</kbd>
+        </button>
+      </div>
+
+      <!-- Blok 3: Kullanıcı Profili & Oturum Alt Kartı -->
+      <div class="sidebar__footer" id="userMenuWrap">
+        <div class="user-popover" id="userPopover" role="menu" aria-label="Kullanıcı oturum menüsü" hidden style="display: none !important; pointer-events: none !important;">
+          <button type="button" class="popover-item" id="openSettingsBtn" data-action="open-settings-modal" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Profil &amp; Kasa Ayarları</span>
+          </button>
+          <button type="button" class="popover-item" id="openPreferencesBtn" data-action="open-preferences-modal" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>
+            </svg>
+            <span>Uygulama Tercihleri</span>
+          </button>
+          <button type="button" class="popover-item" id="backupVaultBtn" data-action="backup-vault" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            <span>Yedek Al (JSON)</span>
+          </button>
+          <button type="button" class="popover-item" id="restoreVaultBtn" data-action="restore-vault" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span>Yedekten Geri Yükle</span>
+          </button>
+          <div class="popover-divider" role="separator"></div>
+          <button type="button" class="popover-item" id="popoverTestToggleBtn" data-action="enter-test-mode" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 2v7.31M14 2v7.31M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0"/>
+            </svg>
+            <span id="popoverTestToggleText">Test Hesabına Geç</span>
+          </button>
+          <button type="button" class="popover-item" id="popoverResetTestBtn" data-action="reset-test-mode" role="menuitem" style="display:none;color:#B45309;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/>
+            </svg>
+            <span>Test Verilerini Sıfırla</span>
+          </button>
+          <div class="popover-divider" role="separator"></div>
+          <button type="button" class="popover-item popover-item--danger" id="lockVaultBtn" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="11" width="16" height="10" rx="2"/>
+              <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+            </svg>
+            <span>Kasayı Kilitle</span>
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="user-card"
+          id="userCardBtn"
+          aria-haspopup="menu"
+          aria-expanded="false"
+        >
+          <span class="user-card__avatar" id="sidebarUserAvatar" aria-hidden="true">
+            <svg viewBox="0 0 36 36" width="34" height="34" fill="none">
+              <rect width="36" height="36" rx="18" fill="#EFF6FF"/>
+              <circle cx="18" cy="14" r="5.5" fill="#2563EB"/>
+              <path d="M7.5 31c1.7-5.6 6-8.4 10.5-8.4s8.8 2.8 10.5 8.4" fill="#2563EB"/>
+            </svg>
+          </span>
+          <span class="user-card__info">
+            <span class="user-card__name" id="sidebarUserName">Usta</span>
+            <span class="user-card__sub">Kişisel Kasa</span>
+          </span>
+          <span class="user-card__more" id="userCardMoreBtn" title="Oturum menüsü" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <circle cx="12" cy="5" r="1.75"/>
+              <circle cx="12" cy="12" r="1.75"/>
+              <circle cx="12" cy="19" r="1.75"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="center scroll main-content" id="center">
+
+      <!-- =================================================================
+           EKRAN 1: VARLIKLARIM & HESAPLAR (ASSETS & ACCOUNTS)
+           ================================================================= -->
+      <div class="center__inner assets-screen" id="assetsView" hidden>
+        <!-- 1. Üst Başlık Çubuğu -->
+        <header class="dc-header">
+          <div class="dc-header__titles">
+            <h1 class="dc-title">Varlıklarım &amp; Hesaplar</h1>
+            <p class="dc-subtitle">Banka hesapları, nakit cüzdanlar ve kredi kartı limit yönetimi</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button type="button" class="btn btn--secondary dc-transfer-btn" id="openTransferModalBtn" data-action="open-transfer-modal" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;padding:8px 14px;border-radius:10px;background:#F1F5F9;border:1px solid #CBD5E1;color:#1E293B;cursor:pointer;font-size:13px;transition:all 0.15s ease;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m7 16 5 5 5-5"/><path d="M12 21V3"/><path d="m17 8-5-5-5 5"/></svg><span>⇄ Para Aktar</span></button>
+            <button type="button" class="dc-add-btn" id="openAddAccountBtn" data-action="open-account-modal">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>+ Yeni Hesap / Kart Ekle</span>
+          </button>
+          </div>
+        </header>
+
+        <!-- 2. Likidite & Kredi KPI Şeridi (3 Dengeli Kart) -->
+        <section class="dc-kpis assets-kpis" id="assetsKpis" aria-label="Likidite ve kredi kartı özeti"></section>
+
+        <!-- 3. İki Sütunlu Bölünmüş Çalışma Alanı (Sol %38 | Sağ %62, gap: 24px) -->
+        <section class="assets-split" aria-label="Cüzdan vitrini ve hesap inceleyici">
+          <!-- SOL PANEL: Dijital Cüzdan & Hesap Listesi (%38 Genişlik) -->
+          <div class="wallet-pane">
+            <div class="seg-control wallet-tabs" role="tablist" aria-label="Hesap türü filtresi">
+              <button type="button" role="tab" class="seg-pill is-active" data-wtab="all" aria-selected="true">
+                <span>Tümü</span>
+                <span class="seg-count mono" id="wCountAll">0</span>
+              </button>
+              <button type="button" role="tab" class="seg-pill" data-wtab="liquid" aria-selected="false">
+                <span>Banka / Nakit</span>
+                <span class="seg-count mono" id="wCountLiquid">0</span>
+              </button>
+              <button type="button" role="tab" class="seg-pill" data-wtab="credit" aria-selected="false">
+                <span>Kredi Kartları</span>
+                <span class="seg-count mono" id="wCountCredit">0</span>
+              </button>
+            </div>
+
+            <div class="wallet-stack" id="walletStack" role="listbox" aria-label="Hesaplar ve kartlar"></div>
+          </div>
+
+          <!-- SAĞ PANEL: Seçili Hesap Detayı & Hareket Masası (%62 Genişlik) -->
+          <div class="inspector-pane" id="accountInspector" aria-live="polite"></div>
+        </section>
+
+        <!-- 4. Birikim Kumbaraları & Hedefler (Savings Pots) -->
+        <section class="savings-pots-section" aria-label="Birikim Kumbaraları ve Hedefler" style="margin-top:28px;">
+          <header class="dc-header" style="margin-bottom:16px;">
+            <div class="dc-header__titles">
+              <h2 class="dc-title" style="font-size:18px;">Birikim Hedefleri &amp; Kumbaralar</h2>
+              <p class="dc-subtitle">Acil durum fonu, tatil, teknoloji ve özel hedefler için ayrılan birikimler</p>
+            </div>
+            <button type="button" class="btn btn--primary" id="openAddSavingsGoalBtn" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;padding:8px 16px;border-radius:10px;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <span>+ Yeni Kumbara / Hedef</span>
+            </button>
+          </header>
+
+          <div class="savings-pots-grid" id="savingsPotsGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:16px;">
+            <!-- Dinamik kumbaralar buraya enjekte edilecek -->
+          </div>
+        </section>
+      </div>
+
+      <!-- =================================================================
+           EKRAN 2: İŞLEMLER & HARCAMA KAYITLARI (TRANSACTIONS)
+           ================================================================= -->
+      <div class="center__inner transactions-screen" id="transactionsView" hidden>
+        <header class="dc-header tx-page-header">
+          <div class="dc-header__titles">
+            <h1 class="dc-title">İşlemler &amp; Harcama Kayıtları</h1>
+            <p class="tx-sync-pill">
+              <span class="tx-pulse-dot" aria-hidden="true"></span>
+              <span>Kasa Bakiyeleri ve Kartlarla Çift Yönlü Senkronize</span>
+            </p>
+          </div>
+          <div class="dc-header__actions">
+            <button type="button" class="dc-secondary-btn tx-btn-40" id="openPayCardDebtFromTxBtn" data-action="open-pay-card-debt">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+              </svg>
+              <span>Kart Borcu Ödeme</span>
+            </button>
+            <button type="button" class="dc-secondary-btn tx-btn-40 tx-export-btn" id="exportTxBtn" data-action="export-transactions">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Dışa Aktar</span>
+            </button>
+            <button type="button" class="dc-add-btn tx-btn-40" id="openNewTxModalBtn" data-action="open-transaction-modal">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>Yeni İşlem Ekle</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- İşlemler KPI Şeridi (3 Sütun) -->
+        <section class="dc-kpis assets-kpis tx-kpi-strip" id="txKpis" aria-label="İşlem özet göstergeleri"></section>
+
+        <!-- İşlemler Tablosu: Üst Kenara Yapışık Araç Çubuğu -->
+        <section class="card activity-card tx-activity-card" aria-label="Tüm işlem hareketleri">
+          <header class="tx-toolbar">
+            <div class="search-field tx-search-field">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input id="txSearchInput" name="q_tx_search" type="search" placeholder="İşlem, kategori veya hesap ara…" aria-label="İşlemlerde ara" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            </div>
+
+            <div class="filters tx-filters">
+              <span class="row-count mono" id="txViewRowCount">0 işlem</span>
+
+              <!-- Hesap Seçimi -->
+              <div class="custom-select tx-filter-dropdown" id="txFilterAccountDropdown" data-select-target="txFilterAccount">
+                <select id="txFilterAccount" class="sr" tabindex="-1" aria-label="Hesap veya karta göre filtrele">
+                  <option value="all">Tüm Hesaplar &amp; Kartlar</option>
+                </select>
+                <button type="button" class="custom-select__trigger tx-filter-dropdown__trigger" id="txFilterAccountTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="tx-filter-dropdown__label">Tüm Hesaplar &amp; Kartlar</span>
+                  <svg class="custom-select__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="custom-select__popover tx-filter-dropdown__popover scroll" id="txFilterAccountPopover" role="listbox" hidden style="display: none !important; pointer-events: none !important;"></div>
+              </div>
+
+              <!-- İşlem Türü -->
+              <div class="custom-select tx-filter-dropdown" id="txFilterTypeDropdown" data-select-target="txFilterType">
+                <select id="txFilterType" class="sr" tabindex="-1" aria-label="İşlem türüne göre filtrele">
+                  <option value="all">Tüm Türler</option>
+                  <option value="Gider">Gider / Harcama</option>
+                  <option value="Gelir">Gelir / Tahsilat</option>
+                  <option value="Kart Borcu Ödeme">Kart Borcu Ödeme</option>
+                  <option value="Transfer">Dahili Transfer</option>
+                </select>
+                <button type="button" class="custom-select__trigger tx-filter-dropdown__trigger" id="txFilterTypeTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="tx-filter-dropdown__label">Tüm Türler</span>
+                  <svg class="custom-select__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="custom-select__popover tx-filter-dropdown__popover scroll" id="txFilterTypePopover" role="listbox" hidden style="display: none !important; pointer-events: none !important;"></div>
+              </div>
+
+              <!-- Zaman Aralığı -->
+              <div class="custom-select tx-filter-dropdown" id="txFilterRangeDropdown" data-select-target="txFilterRange">
+                <select id="txFilterRange" class="sr" tabindex="-1" aria-label="Zaman aralığına göre filtrele">
+                  <option value="all">Tüm Zamanlar</option>
+                  <option value="7">Son 7 Gün</option>
+                  <option value="30">Son 30 Gün</option>
+                  <option value="month">Bu Ay</option>
+                </select>
+                <button type="button" class="custom-select__trigger tx-filter-dropdown__trigger" id="txFilterRangeTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="tx-filter-dropdown__label">Tüm Zamanlar</span>
+                  <svg class="custom-select__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="custom-select__popover tx-filter-dropdown__popover scroll" id="txFilterRangePopover" role="listbox" hidden style="display: none !important; pointer-events: none !important;"></div>
+              </div>
+            </div>
+          </header>
+
+          <div class="table-wrap tx-table-wrap">
+            <table class="tx-modern-table">
+              <thead>
+                <tr>
+                  <th>İşlem &amp; Bağlam</th>
+                  <th>Tarih</th>
+                  <th>Hesap &amp; Araç</th>
+                  <th>Akış</th>
+                  <th class="num">Tutar</th>
+                </tr>
+              </thead>
+              <tbody id="txViewRows"></tbody>
+            </table>
+            <div class="empty tx-empty-placeholder" id="txViewEmpty" style="padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;" hidden>
+              <div style="width:52px;height:52px;border-radius:14px;background:#F1F5F9;display:grid;place-items:center;color:#64748B;" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 8h16l-4-4"/><path d="M20 16H4l4 4"/>
+                </svg>
+              </div>
+              <p style="font-size:14px;font-weight:600;color:#0F172A;margin:0;">Henüz İşlem veya Harcama Kaydı Yok</p>
+              <p style="font-size:13px;color:#64748B;max-width:320px;margin:0;">Gelir, gider ve kart ödemelerinizi kaydederek kasanızı takip etmeye başlayın.</p>
+              <button type="button" class="dc-add-btn tx-btn-40" id="emptyTxAddNewBtn" data-action="open-transaction-modal" style="margin-top:6px;">+ Yeni İşlem Ekle</button>
+            </div>
+          </div>
+
+          <footer class="tx-table-footer" id="txTableFooter" aria-label="Tablo özeti ve sayfalama">
+            <div class="tx-footer-status" id="txFooterCounter">Toplam 0 işlemden 0-0 arası gösteriliyor</div>
+            <div class="tx-footer-pagesize" role="group" aria-label="Sayfa başına işlem sayısı">
+              <button type="button" class="tx-pagesize-chip is-active" data-pagesize="12">12</button>
+              <button type="button" class="tx-pagesize-chip" data-pagesize="24">24</button>
+              <button type="button" class="tx-pagesize-chip" data-pagesize="48">48</button>
+            </div>
+            <div class="tx-footer-pagination" id="txPaginationControls" aria-label="Sayfa geçiş kontrolleri"></div>
+          </footer>
+        </section>
+      </div>
+
+      <!-- =================================================================
+           EKRAN 3: BORÇ & ALACAK DEFTERİ (DEBT & CREDIT LEDGER)
+           ================================================================= -->
+      <div class="center__inner ledger-screen" id="debtView" hidden>
+        <header class="dc-header">
+          <div class="dc-header__titles">
+            <h1 class="dc-title">Borç &amp; Alacak Defteri</h1>
+            <p class="dc-subtitle">Aktif yükümlülükler, alacaklar ve kısmi ödeme planları</p>
+          </div>
+          <button type="button" class="dc-add-btn" id="openNewDebtModalBtn" data-action="open-debt-modal">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>+ Yeni Kayıt Ekle</span>
+          </button>
+        </header>
+
+        <section class="dc-kpis" id="dcKpis" aria-label="Borç ve alacak özeti"></section>
+
+        <div class="dc-ledger-container">
+          <section class="dc-toolbar" aria-label="Filtre ve arama araç çubuğu">
+            <div class="seg-control" role="tablist" aria-label="Kayıt görünümü">
+              <button type="button" role="tab" class="seg-pill is-active" data-seg="all" aria-selected="true">
+                <span>Tümü</span>
+                <span class="seg-count seg-count--all mono" id="segCountAll">0</span>
+              </button>
+              <button type="button" role="tab" class="seg-pill" data-seg="payable" aria-selected="false">
+                <span>Borçlarım</span>
+                <span class="seg-count seg-count--pay mono" id="segCountPay">0</span>
+              </button>
+              <button type="button" role="tab" class="seg-pill" data-seg="receivable" aria-selected="false">
+                <span>Alacaklarım</span>
+                <span class="seg-count seg-count--rec mono" id="segCountRec">0</span>
+              </button>
+            </div>
+
+            <div class="dc-toolbar__right">
+              <div class="dc-search">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"/>
+                  <path d="m21 21-4.3-4.3"/>
+                </svg>
+                <input id="dcSearchInput" name="q_dc_search" type="search" placeholder="Kişi, kurum veya açıklama ara…" aria-label="Kayıtlarda ara" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+              </div>
+
+              <div class="custom-select tx-filter-dropdown" id="dcSortDropdown" data-select-target="dcSortSelect">
+                <select id="dcSortSelect" class="sr" tabindex="-1" aria-label="Sıralama ölçütü">
+                  <option value="due">Vadeye Göre (En Yakın)</option>
+                  <option value="remaining">Kalan Tutara Göre</option>
+                </select>
+                <button type="button" class="custom-select__trigger tx-filter-dropdown__trigger" id="dcSortTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="tx-filter-dropdown__label">Vadeye Göre (En Yakın)</span>
+                  <svg class="custom-select__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="custom-select__popover tx-filter-dropdown__popover scroll" id="dcSortPopover" role="listbox" hidden style="display: none !important; pointer-events: none !important;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="dc-list" id="dcList" aria-label="Alacak ve borç listesi"></section>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           EKRAN 4: GENEL BAKIŞ (DASHBOARD OVERVIEW)
+           ================================================================= -->
+      <div class="center__inner dash-screen" id="dashboardView">
+        <!-- Akıllı Tekrarlayan İşlem Onay Bandı -->
+        <div id="recurringAlertBanner" class="recurring-alert-banner" hidden style="display: none !important;"></div>
+
+        <header class="dash-head dash-anim" style="--i:0">
+          <div>
+            <h1 class="overview-title">Genel Bakış</h1>
+            <p class="overview-sub">Kişisel finansal durum, nakit akışı ve acil yükümlülükler</p>
+          </div>
+          <div class="overview-controls" style="display:flex;align-items:center;gap:10px;">
+            <button type="button" class="overview-privacy-btn" data-action="toggle-privacy" title="Gizlilik Modu (Kısayol: H)" aria-label="Gizlilik Modunu Aç/Kapat">
+              <svg class="privacy-icon-eye" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="privacy-icon-off" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                <line x1="2" y1="2" x2="22" y2="22"/>
+              </svg>
+              <span class="privacy-btn-label">Gizlilik</span>
+            </button>
+            <button type="button" class="dc-add-btn tx-btn-40" id="openNewTxFromDashBtn" data-action="open-transaction-modal">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>Yeni İşlem Ekle</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="dash-bento">
+          <!-- SOL ALAN (%68) -->
+          <div class="dash-main">
+            <section class="dash-kpis" id="kpis" aria-label="Temel finansal göstergeler"></section>
+
+            <div class="dash-flow">
+              <section class="dash-card dash-panel dash-anim" style="--i:3" aria-label="Nakit akışı">
+                <header class="dash-panel__head">
+                  <div>
+                    <h2 class="dash-panel__title">Nakit Akışı</h2>
+                    <p class="dash-panel__sub">Son 6 ay · Gelir ve Gider</p>
+                  </div>
+                  <div class="legend">
+                    <span class="legend__item"><i class="legend__dot legend__dot--inc"></i>Gelir</span>
+                    <span class="legend__item"><i class="legend__dot legend__dot--exp"></i>Gider</span>
+                  </div>
+                </header>
+                <div class="chart-box dash-chart" id="chartCash"></div>
+              </section>
+
+              <section class="dash-card dash-panel dash-anim" style="--i:4" aria-label="Aylık harcama dağılımı">
+                <header class="dash-panel__head">
+                  <div>
+                    <h2 class="dash-panel__title">Harcama Dağılımı</h2>
+                    <p class="dash-panel__sub">Kategorilere göre gider payı</p>
+                  </div>
+                </header>
+                <div class="dash-spend" id="dashSpend"></div>
+              </section>
+            </div>
+
+            <section class="dash-card dash-panel dash-anim" id="dashAnalyticsSection" style="--i:5" aria-label="Finansal Analitik ve Raporlar"></section>
+
+            <section class="dash-card dash-panel dash-anim" style="--i:6" aria-label="Son hareketler">
+              <header class="dash-panel__head">
+                <div>
+                  <h2 class="dash-panel__title">Son Hareketler</h2>
+                  <p class="dash-panel__sub">En son kaydedilen 6 işlem</p>
+                </div>
+              </header>
+              <ul class="dash-activity" id="dashRecent"></ul>
+              <a href="#" class="dash-link" id="dashAllTxLink">Tüm İşlemleri Görüntüle <span aria-hidden="true">→</span></a>
+            </section>
+          </div>
+
+          <!-- SAĞ PANEL (%32) -->
+          <aside class="dash-side">
+            <section class="dash-card dash-panel dash-anim" style="--i:2" aria-label="Varlıklarım ve kartlar">
+              <header class="dash-panel__head">
+                <div>
+                  <h2 class="dash-panel__title">Varlıklarım &amp; Kartlar</h2>
+                  <p class="dash-panel__sub">Canlı bakiyeler</p>
+                </div>
+              </header>
+              <div class="dash-wallet" id="dashWallet"></div>
+              <button type="button" class="dash-ghost-btn" id="dashAddAccBtn" data-action="open-account-modal">+ Hesap / Kart Ekle</button>
+            </section>
+
+            <section class="dash-card dash-panel dash-anim" style="--i:4" aria-label="Borç ve alacak radarı">
+              <header class="dash-panel__head">
+                <div>
+                  <h2 class="dash-panel__title">Borç &amp; Alacak Radarı</h2>
+                  <p class="dash-panel__sub">7 gün içinde vadesi gelen veya geçen</p>
+                </div>
+              </header>
+              <ul class="dash-radar" id="dashRadar"></ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           EKRAN 5: NAKİT AKIŞI TAKVİMİ (CASHFLOW CALENDAR)
+           ================================================================= -->
+      <div class="center__inner calendar-screen" id="plannedView" hidden>
+        <!-- 1. Üst Başlık Çubuğu -->
+        <header class="dc-header">
+          <div class="dc-header__titles">
+            <h1 class="dc-title">Finansal Nakit Akışı Takvimi</h1>
+            <p class="dc-subtitle">Tüm gerçekleşen gelir ve harcamalar, taksitler, kredi kartı ekstreleri ve vadeler</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <!-- Filtre Sekmeleri -->
+            <div style="display:flex;align-items:center;background:#F1F5F9;border:1px solid #E2E8F0;border-radius:10px;padding:3px;gap:2px;">
+              <button type="button" class="cal-filter-btn is-active" data-cal-filter="all" style="padding:5px 11px;font-size:12px;font-weight:600;border-radius:7px;border:none;cursor:pointer;background:#FFFFFF;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,0.08);transition:all 120ms;">Tümü</button>
+              <button type="button" class="cal-filter-btn" data-cal-filter="in" style="padding:5px 11px;font-size:12px;font-weight:600;border-radius:7px;border:none;cursor:pointer;background:transparent;color:#64748B;transition:all 120ms;">Gelirler</button>
+              <button type="button" class="cal-filter-btn" data-cal-filter="out" style="padding:5px 11px;font-size:12px;font-weight:600;border-radius:7px;border:none;cursor:pointer;background:transparent;color:#64748B;transition:all 120ms;">Giderler</button>
+              <button type="button" class="cal-filter-btn" data-cal-filter="planned" style="padding:5px 11px;font-size:12px;font-weight:600;border-radius:7px;border:none;cursor:pointer;background:transparent;color:#64748B;transition:all 120ms;">Planlı &amp; Vadeler</button>
+            </div>
+            <button type="button" class="btn btn--secondary" id="calTodayBtn" style="padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px;background:#F1F5F9;border:1px solid #CBD5E1;color:#1E293B;cursor:pointer;">Bugün</button>
+            <div style="display:flex;align-items:center;gap:4px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:3px 6px;">
+              <button type="button" id="calPrevMonthBtn" class="btn btn--ghost" style="padding:4px 8px;cursor:pointer;border:none;background:none;font-weight:700;color:#475569;" title="Önceki Ay">◀</button>
+              <span id="calMonthTitle" class="mono" style="font-weight:700;font-size:14px;min-width:130px;text-align:center;color:#0F172A;"></span>
+              <button type="button" id="calNextMonthBtn" class="btn btn--ghost" style="padding:4px 8px;cursor:pointer;border:none;background:none;font-weight:700;color:#475569;" title="Sonraki Ay">▶</button>
+            </div>
+          </div>
+        </header>
+
+        <!-- 2. KPI Üçlüsü -->
+        <section class="dc-kpis-strip" id="calKpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;"></section>
+
+        <!-- 3. Ana Izgara & Detay Paneli -->
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;">
+          <!-- Sol: 7 Kolon Takvim Kartı -->
+          <div class="card" style="padding:16px;background:#FFFFFF;border-radius:12px;border:1px solid #E2E8F0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div id="calWeekdaysRow"></div>
+            <div id="calDaysGrid"></div>
+          </div>
+
+          <!-- Sağ: Günlük Akış Detayı Kartı -->
+          <div class="card" id="calDetailCard" style="padding:16px;background:#FFFFFF;border-radius:12px;border:1px solid #E2E8F0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div id="calDetailContent"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal Montaj Noktası: Tüm modallar modals/templates/*.tpl.js ve
+     components/*/*.tpl.js şablonlarından ModalRegistry ile buraya enjekte edilir. -->
+<div id="modalRoot"></div>
+
+<!-- Bildirim Çubuğu -->
+<div class="toast" id="toast" role="status" aria-live="polite" hidden style="display: none !important; pointer-events: none !important;"></div>
+
+<script src="storage.js"></script>
+<script src="shell.js"></script>
+
+<!-- Modüler Çekirdek & Durum Yönetimi -->
+<script src="core/state.js"></script>
+
+
+<!-- Ortak Modal Altyapısı -->
+<script src="modals/modal-base.js"></script>
+
+<!-- Bileşenler (Components) -->
+<script src="components/sidebar/sidebar.js"></script>
+<script src="components/cards/cards.js"></script>
+<script src="components/charts/charts.js"></script>
+<script src="components/tables/tables.js"></script>
+<script src="components/recurring/recurring-engine.js"></script>
+
+<!-- Özel Modallar ve Ödeme Masaları -->
+<script src="modals/new-transaction.js"></script>
+<script src="modals/debt-pay-desk.js"></script>
+<script src="modals/account-modals.js"></script>
+<script src="modals/transfer-modal.js"></script>
+<script src="modals/savings-goal-modal.js"></script>
+
+<!-- Sayfa Görünümleri (Views) -->
+<script src="views/overview.js"></script>
+<script src="views/transactions.js"></script>
+<script src="views/debts.js"></script>
+<script src="views/assets.js"></script>
+<script src="views/calendar.js"></script>
+
+<!-- Global Olaylar & Başlatıcı -->
+<script src="core/events.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

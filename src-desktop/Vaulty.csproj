@@ -1,0 +1,143 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>..\assets\app-icon.ico</ApplicationIcon>
+    <AssemblyName>Vaulty</AssemblyName>
+    <RootNamespace>Vaulty</RootNamespace>
+    <Version>1.5.1.0</Version>
+    <AssemblyVersion>1.5.1.0</AssemblyVersion>
+    <FileVersion>1.5.1.0</FileVersion>
+    <InformationalVersion>1.5.1.0</InformationalVersion>
+    <Product>Vaulty</Product>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\index.html">
+      <LogicalName>WebAssets.index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\dashboard.html">
+      <LogicalName>WebAssets.dashboard.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\styles.css">
+      <LogicalName>WebAssets.styles.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\shell.css">
+      <LogicalName>WebAssets.shell.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\app.js">
+      <LogicalName>WebAssets.app.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\storage.js">
+      <LogicalName>WebAssets.storage.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\shell.js">
+      <LogicalName>WebAssets.shell.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\main.js">
+      <LogicalName>WebAssets.main.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\core\storage.js">
+      <LogicalName>WebAssets.core.storage.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\core\state.js">
+      <LogicalName>WebAssets.core.state.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\core\events.js">
+      <LogicalName>WebAssets.core.events.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\modal-base.js">
+      <LogicalName>WebAssets.modals.modal-base.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\new-transaction.js">
+      <LogicalName>WebAssets.modals.new-transaction.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\debt-pay-desk.js">
+      <LogicalName>WebAssets.modals.debt-pay-desk.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\account-modals.js">
+      <LogicalName>WebAssets.modals.account-modals.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\transfer-modal.js">
+      <LogicalName>WebAssets.modals.transfer-modal.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\savings-goal-modal.js">
+      <LogicalName>WebAssets.modals.savings-goal-modal.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\modals\modals.css">
+      <LogicalName>WebAssets.modals.modals.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\sidebar\sidebar.js">
+      <LogicalName>WebAssets.components.sidebar.sidebar.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\sidebar\sidebar.css">
+      <LogicalName>WebAssets.components.sidebar.sidebar.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\cards\cards.js">
+      <LogicalName>WebAssets.components.cards.cards.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\cards\cards.css">
+      <LogicalName>WebAssets.components.cards.cards.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\charts\charts.js">
+      <LogicalName>WebAssets.components.charts.charts.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\charts\charts.css">
+      <LogicalName>WebAssets.components.charts.charts.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\tables\tables.js">
+      <LogicalName>WebAssets.components.tables.tables.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\tables\tables.css">
+      <LogicalName>WebAssets.components.tables.tables.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\recurring\recurring-engine.js">
+      <LogicalName>WebAssets.components.recurring.recurring-engine.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\components\recurring\recurring.css">
+      <LogicalName>WebAssets.components.recurring.recurring.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\views\overview.js">
+      <LogicalName>WebAssets.views.overview.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\views\transactions.js">
+      <LogicalName>WebAssets.views.transactions.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\views\debts.js">
+      <LogicalName>WebAssets.views.debts.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\views\assets.js">
+      <LogicalName>WebAssets.views.assets.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\views\calendar.js">
+      <LogicalName>WebAssets.views.calendar.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\views\views.css">
+      <LogicalName>WebAssets.views.views.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\assets\app-icon.ico">
+      <LogicalName>WebAssets.assets.app-icon.ico</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\assets\app-icon.jpg">
+      <LogicalName>WebAssets.assets.app-icon.jpg</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\assets\vault-logo.png">
+      <LogicalName>WebAssets.assets.vault-logo.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\assets\vault-logo-full.png">
+      <LogicalName>WebAssets.assets.vault-logo-full.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
