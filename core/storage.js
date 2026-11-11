@@ -1,5 +1,5 @@
 /*
- * Local-first encrypted persistence layer for Vaulty v1.5.1.
+ * Local-first encrypted persistence layer for Vaulty v1.6.0.
  * Encrypts data in localStorage and synchronizes with native %APPDATA%\Vaulty\vault.json (AES-256-GCM) via WebView2 bridge.
  */
 (() => {

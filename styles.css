@@ -54,7 +54,7 @@ input {
 
 /* Light-mode adaptation for the 36px Desktop Window Titlebar */
 .titlebar--light {
-  background: #F1F5F9;
+  background: var(--bg-muted);
   border-bottom: 1px solid var(--ring-border);
   color: var(--text-primary);
   border-top-left-radius: 10px;
@@ -153,7 +153,7 @@ body:not(.is-maximized) .canvas {
   overflow: hidden;
   display: grid;
   place-items: center;
-  background-color: #EFF6FF;
+  background-color: var(--tint-blue);
 }
 
 .avatar svg {

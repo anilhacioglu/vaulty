@@ -123,56 +123,128 @@
     });
   }
 
+  let _bannerExpanded = false;
+  let _bannerOutsideBound = false;
+
+  function setBannerExpanded(expanded) {
+    const banner = document.getElementById('recurringAlertBanner');
+    _bannerExpanded = Boolean(expanded);
+    if (!banner) return;
+    banner.classList.toggle('is-expanded', _bannerExpanded);
+    banner.classList.toggle('is-collapsed', !_bannerExpanded);
+    const toggleBtn = document.getElementById('recAlertToggleBtn');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', String(_bannerExpanded));
+  }
+
   function renderDashboardAlertBanner() {
     const banner = document.getElementById('recurringAlertBanner');
+    const slot = document.getElementById('recAlertSlot');
     if (!banner) return;
 
     const dueList = getDueRecurringTransactions();
-    if (dueList.length === 0) {
-      banner.hidden = true;
-      banner.setAttribute('hidden', '');
-      banner.style.setProperty('display', 'none', 'important');
-      banner.innerHTML = '';
-      return;
-    }
-
+    const hasDue = dueList.length > 0;
     const State = window.Vaulty?.State;
     const tryFmt = State?.tryFmt || ((v) => `${Number(v).toFixed(2)} ₺`);
     const totalAmount = dueList.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
-    banner.innerHTML = `
-      <div class="rec-banner-left">
-        <div class="rec-banner-icon-pulse" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-          </svg>
-        </div>
+    const pillContentHtml = hasDue
+      ? `
         <div class="rec-banner-text">
           <span class="rec-banner-title">
-            Vadesi gelen <span class="rec-badge-count">${dueList.length}</span> adet sabit ödemeniz var
+            Vadesi gelen <span class="rec-badge-count">${dueList.length}</span> sabit ödeme
           </span>
           <span class="rec-banner-sub">
-            Toplam <strong>${tryFmt(totalAmount)}</strong> tutarında periyodik harcama onayınızı bekliyor
+            Toplam <strong>${tryFmt(totalAmount)}</strong> onay bekliyor
           </span>
         </div>
-      </div>
 
-      <div class="rec-banner-actions">
-        <button type="button" class="rec-btn-review" data-action="open-review-recurring">
-          <span>İncele</span>
-        </button>
-        <button type="button" class="rec-btn-approve-all" data-action="approve-all-recurring">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="20 6 9 17 4 12"/>
+        <div class="rec-banner-actions">
+          <button type="button" class="rec-btn-review" data-action="open-review-recurring">
+            <span>İncele</span>
+          </button>
+          <button type="button" class="rec-btn-approve-all" data-action="approve-all-recurring">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Tümünü Onayla</span>
+          </button>
+          <button type="button" class="rec-btn-collapse" id="recAlertCollapseBtn" title="Kapat" aria-label="Uyarıyı kapat">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>`
+      : `
+        <div class="rec-banner-text">
+          <span class="rec-banner-title">Sabit Ödemeler</span>
+          <span class="rec-banner-sub">Bekleyen vadesi gelmiş sabit ödeme yok</span>
+        </div>
+        <div class="rec-banner-actions">
+          <button type="button" class="rec-btn-review" data-action="open-review-recurring">
+            <span>İncele</span>
+          </button>
+          <button type="button" class="rec-btn-collapse" id="recAlertCollapseBtn" title="Kapat" aria-label="Kapat">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>`;
+
+    banner.innerHTML = `
+      <button type="button" class="vy-circle-btn rec-trigger-btn ${hasDue ? 'has-notif' : ''}" id="recAlertToggleBtn" title="${hasDue ? `Vadesi gelen ${dueList.length} sabit ödeme (${tryFmt(totalAmount)})` : 'Sabit Ödeme Takibi (Bekleyen yok)'}" aria-label="Sabit Ödeme Takibi" aria-expanded="${_bannerExpanded ? 'true' : 'false'}">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+          <path d="M16 16h5v5"/>
+        </svg>
+        <span class="rec-dot-badge" ${hasDue ? '' : 'hidden'} aria-hidden="true"></span>
+      </button>
+
+      <div class="rec-expanded-pill" role="region" aria-label="Sabit ödeme durumu">
+        <button type="button" class="rec-banner-icon-pulse rec-pill-icon" title="Kapat" aria-label="Kapat">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
           </svg>
-          <span>Tümünü Onayla</span>
         </button>
+        ${pillContentHtml}
       </div>
     `;
 
+    if (slot) slot.hidden = false;
     banner.hidden = false;
     banner.removeAttribute('hidden');
-    banner.style.setProperty('display', 'flex', 'important');
+    banner.style.setProperty('display', 'block', 'important');
+    setBannerExpanded(_bannerExpanded);
+
+    const toggleBtn = document.getElementById('recAlertToggleBtn');
+    const collapseBtn = document.getElementById('recAlertCollapseBtn');
+    const pillIcon = banner.querySelector('.rec-pill-icon');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setBannerExpanded(!_bannerExpanded);
+      });
+    }
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setBannerExpanded(false);
+      });
+    }
+    if (pillIcon) {
+      pillIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setBannerExpanded(false);
+      });
+    }
+    banner.querySelectorAll('.rec-btn-review, .rec-btn-approve-all').forEach((actBtn) => {
+      actBtn.addEventListener('click', () => setBannerExpanded(false));
+    });
+    if (!_bannerOutsideBound) {
+      _bannerOutsideBound = true;
+      document.addEventListener('click', (e) => {
+        if (!_bannerExpanded) return;
+        const b = document.getElementById('recurringAlertBanner');
+        if (b && !b.contains(e.target)) setBannerExpanded(false);
+      });
+    }
   }
 
   function openReviewModal() {
@@ -207,11 +279,11 @@
 
     if (dueList.length === 0) {
       listEl.innerHTML = `
-        <div style="text-align:center;padding:32px 16px;color:#64748B;">
+        <div style="text-align:center;padding:32px 16px;color:var(--text-secondary);">
           <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
-          <strong style="color:#0F172A;font-size:15px;display:block;margin-bottom:4px;">Harika! Vadesi gelen ödeme kalmadı</strong>
+          <strong style="color:var(--text-primary);font-size:15px;display:block;margin-bottom:4px;">Harika! Vadesi gelen ödeme kalmadı</strong>
           <span>Tüm tekrarlayan işlemleriniz güncel ve kontrol altında.</span>
         </div>
       `;

@@ -202,39 +202,136 @@
 
     const outCount = events.filter((e) => e.direction === 'out').length;
     const inCount = events.filter((e) => e.direction === 'in').length;
+    const volume = totalIn + totalOut;
+    const inPct = volume > 0 ? Math.round((totalIn / volume) * 100) : 50;
+    const outPct = volume > 0 ? 100 - inPct : 50;
 
     host.innerHTML = `
-      <article class="dc-kpi-card dc-kpi-card--debt">
-        <div class="dc-kpi-card__top">
-          <span class="dc-kpi-card__label">Aylık Çıkışlar (Gider, Borç &amp; Ekstre)</span>
+      <article class="dc-kpi-card tx-kpi-card tx-kpi-card--income">
+        <div class="tx-kpi-card__head">
+          <div>
+            <span class="dc-kpi-card__label">Aylık Girişler</span>
+            <div class="dc-kpi-card__value mono tx-kpi-val--income" data-privacy-blur>+${tryFmt(totalIn)}</div>
+          </div>
+          <span class="dc-kpi-badge dc-kpi-badge--emerald mono">%${inPct} pay</span>
         </div>
-        <div class="dc-kpi-card__value mono" style="color:#E11D48;">${tryFmt(totalOut)}</div>
-        <span class="dc-kpi-badge dc-kpi-badge--rose mono">
-          ${outCount} adet işlem / ödeme
-        </span>
+        <div class="tx-kpi-spark-row">
+          <div class="tx-kpi-spark-track">
+            <span class="tx-kpi-spark-fill tx-kpi-spark-fill--emerald" style="width: ${inPct}%;"></span>
+          </div>
+          <div class="tx-kpi-foot">
+            <span class="tx-kpi-caption">${inCount} gelir &amp; tahsilat kaydı</span>
+            <span class="tx-kpi-caption mono">Gelir Akışı</span>
+          </div>
+        </div>
       </article>
 
-      <article class="dc-kpi-card dc-kpi-card--debt">
-        <div class="dc-kpi-card__top">
-          <span class="dc-kpi-card__label">Aylık Girişler (Gelir &amp; Tahsilat)</span>
+      <article class="dc-kpi-card tx-kpi-card tx-kpi-card--expense">
+        <div class="tx-kpi-card__head">
+          <div>
+            <span class="dc-kpi-card__label">Aylık Çıkışlar</span>
+            <div class="dc-kpi-card__value mono tx-kpi-val--expense" data-privacy-blur>−${tryFmt(totalOut)}</div>
+          </div>
+          <span class="dc-kpi-badge dc-kpi-badge--rose mono">%${outPct} pay</span>
         </div>
-        <div class="dc-kpi-card__value mono" style="color:#059669;">${tryFmt(totalIn)}</div>
-        <span class="dc-kpi-badge dc-kpi-badge--emerald mono">
-          ${inCount} adet gelir / tahsilat
-        </span>
+        <div class="tx-kpi-spark-row">
+          <div class="tx-kpi-spark-track">
+            <span class="tx-kpi-spark-fill tx-kpi-spark-fill--rose" style="width: ${outPct}%;"></span>
+          </div>
+          <div class="tx-kpi-foot">
+            <span class="tx-kpi-caption">${outCount} harcama, kart &amp; vade</span>
+            <span class="tx-kpi-caption mono">Çıkış Akışı</span>
+          </div>
+        </div>
       </article>
 
-      <article class="dc-kpi-card dc-kpi-card--debt">
-        <div class="dc-kpi-card__top">
-          <span class="dc-kpi-card__label">Net Nakit Akışı Pozisyonu</span>
+      <article class="dc-kpi-card tx-kpi-card tx-kpi-card--net">
+        <div class="tx-kpi-card__head">
+          <div>
+            <span class="dc-kpi-card__label">Net Nakit Pozisyonu</span>
+            <div class="dc-kpi-card__value mono ${isPos ? 'tx-kpi-val--income' : 'tx-kpi-val--expense'}" data-privacy-blur>
+              ${isPos ? '+' : '−'}${tryFmt(Math.abs(netPos))}
+            </div>
+          </div>
+          <span class="dc-kpi-badge ${isPos ? 'dc-kpi-badge--emerald' : 'dc-kpi-badge--rose'} mono">
+            ${isPos ? 'Pozitif Akış' : 'Açık Akış'}
+          </span>
         </div>
-        <div class="dc-kpi-card__value mono ${isPos ? 'is-pos' : 'is-neg'}" style="color:${isPos ? '#059669' : '#E11D48'};">
-          ${isPos ? '+' : '−'}${tryFmt(Math.abs(netPos))}
+        <div class="tx-kpi-spark-row">
+          <div class="tx-kpi-dual-track" title="Giriş %${inPct} / Çıkış %${outPct}">
+            <span class="tx-kpi-dual-in" style="width: ${inPct}%;"></span>
+            <span class="tx-kpi-dual-out" style="width: ${outPct}%;"></span>
+          </div>
+          <div class="tx-kpi-foot">
+            <span class="tx-kpi-caption">Giriş − Çıkış Dengesi</span>
+            <span class="tx-kpi-caption mono">${events.length} toplam kayıt</span>
+          </div>
         </div>
-        <span class="dc-kpi-badge ${isPos ? 'dc-kpi-badge--net-pos' : 'dc-kpi-badge--net-neg'} mono">
-          ${isPos ? '▲ Pozitif Nakit Akışı' : '▼ Net Nakit Açığı'}
-        </span>
       </article>
+    `;
+  }
+
+  function renderMonthSummaryCard(year, month, allMonthEvents) {
+    const host = document.getElementById('calMonthSummaryCard');
+    if (!host) return;
+
+    const plannedTypes = new Set(['recurring', 'card', 'ledger', 'installment']);
+    const plannedEvs = allMonthEvents.filter((e) => plannedTypes.has(e.type));
+
+    const recAmt = round2(plannedEvs.filter((e) => e.type === 'recurring' && e.direction === 'out').reduce((s, e) => s + e.amount, 0));
+    const cardAmt = round2(plannedEvs.filter((e) => e.type === 'card').reduce((s, e) => s + e.amount, 0));
+    const ledgerAmt = round2(plannedEvs.filter((e) => e.type === 'ledger').reduce((s, e) => s + e.amount, 0));
+    const instAmt = round2(plannedEvs.filter((e) => e.type === 'installment').reduce((s, e) => s + e.amount, 0));
+
+    const upcomingList = [...plannedEvs]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 3);
+
+    const upcomingHtml = upcomingList.length === 0
+      ? '<div class="tx-rail-empty">Bu ay planlı ödeme veya vade yok.</div>'
+      : upcomingList.map((ev) => {
+          const dayPart = ev.date.slice(8, 10);
+          const isRec = ev.direction === 'in';
+          return `
+            <button type="button" class="dc-rail-due-item" data-cal-jump="${esc(ev.date)}">
+              <span class="cal-jump-day mono">${dayPart}</span>
+              <div class="dc-rail-due-meta">
+                <strong>${esc(ev.title)}</strong>
+                <small>${esc(ev.subtitle)}</small>
+              </div>
+              <span class="dc-rail-due-amt mono ${isRec ? 'is-rec' : 'is-pay'}" data-privacy-blur>${isRec ? '+' : '−'}${tryFmt(ev.amount)}</span>
+            </button>`;
+        }).join('');
+
+    host.innerHTML = `
+      <header class="tx-rail-card__head">
+        <div>
+          <h3 class="tx-rail-card__title">${MONTHS_TR[month]} Planlı Akışlar</h3>
+          <p class="tx-rail-card__sub">Sabit, ekstre ve vade özeti</p>
+        </div>
+        <span class="tx-rail-pill mono">${plannedEvs.length} planlı</span>
+      </header>
+
+      <div class="tx-rail-commits">
+        <div class="tx-rail-commit">
+          <span class="tx-rail-commit__lbl">Sabit Giderler</span>
+          <strong class="mono" data-privacy-blur>${tryFmt(recAmt)}</strong>
+        </div>
+        <div class="tx-rail-commit">
+          <span class="tx-rail-commit__lbl">Kart Ekstreleri</span>
+          <strong class="mono" data-privacy-blur>${tryFmt(cardAmt)}</strong>
+        </div>
+        <div class="tx-rail-commit">
+          <span class="tx-rail-commit__lbl">Defter Vadeleri</span>
+          <strong class="mono" data-privacy-blur>${tryFmt(ledgerAmt)}</strong>
+        </div>
+        <div class="tx-rail-commit">
+          <span class="tx-rail-commit__lbl">Taksit Planı</span>
+          <strong class="mono" data-privacy-blur>${tryFmt(instAmt)}</strong>
+        </div>
+      </div>
+
+      <div class="cal-upcoming-list">${upcomingHtml}</div>
     `;
   }
 
@@ -248,59 +345,58 @@
 
     const totalOut = round2(dayEvents.filter((e) => e.direction === 'out').reduce((s, e) => s + e.amount, 0));
     const totalIn = round2(dayEvents.filter((e) => e.direction === 'in').reduce((s, e) => s + e.amount, 0));
-    const net = round2(totalIn - totalOut);
 
     let listHtml = '';
     if (dayEvents.length === 0) {
       listHtml = `
-        <div style="padding:36px 12px; text-align:center; color:#94A3B8; font-size:13px;">
-          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" style="margin:0 auto 10px; display:block; opacity:0.6;">
+        <div class="cal-detail-empty">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
             <line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          Bu tarihte kayıtlı bir işlem, gelir veya ödeme bulunmuyor.
+          <span>Bu tarihte kayıtlı işlem veya ödeme bulunmuyor.</span>
         </div>`;
     } else {
       listHtml = dayEvents.map((ev) => {
         const isIncome = ev.direction === 'in';
         let badgeText = isIncome ? 'Gelir' : 'Gider';
-        let badgeBg = isIncome ? '#ECFDF5' : '#FEF2F2';
-        let badgeColor = isIncome ? '#059669' : '#DC2626';
+        let badgeBg = isIncome ? 'var(--tint-green)' : 'var(--tint-red)';
+        let badgeColor = isIncome ? 'var(--ink-green)' : 'var(--ink-red)';
 
         if (ev.type === 'card') {
           badgeText = 'Kredi Kartı';
-          badgeBg = '#EFF6FF';
-          badgeColor = '#2563EB';
+          badgeBg = 'var(--tint-blue)';
+          badgeColor = 'var(--ink-blue)';
         } else if (ev.type === 'recurring') {
           badgeText = isIncome ? 'Düzenli Gelir' : 'Sabit Gider';
-          badgeBg = isIncome ? '#ECFDF5' : '#FEF3C7';
-          badgeColor = isIncome ? '#059669' : '#D97706';
+          badgeBg = isIncome ? 'var(--tint-green)' : 'var(--tint-amber)';
+          badgeColor = isIncome ? 'var(--ink-green)' : 'var(--ink-amber)';
         } else if (ev.type === 'installment') {
           badgeText = 'Taksit';
-          badgeBg = '#F5F3FF';
-          badgeColor = '#7C3AED';
+          badgeBg = 'var(--tint-violet)';
+          badgeColor = 'var(--ink-violet)';
         } else if (ev.type === 'ledger') {
           badgeText = isIncome ? 'Tahsilat' : 'Borç';
-          badgeBg = isIncome ? '#ECFDF5' : '#FEF3C7';
-          badgeColor = isIncome ? '#059669' : '#D97706';
+          badgeBg = isIncome ? 'var(--tint-green)' : 'var(--tint-amber)';
+          badgeColor = isIncome ? 'var(--ink-green)' : 'var(--ink-amber)';
         } else if (ev.type === 'card-pay') {
           badgeText = 'Borç Ödeme';
-          badgeBg = '#EFF6FF';
-          badgeColor = '#2563EB';
+          badgeBg = 'var(--tint-blue)';
+          badgeColor = 'var(--ink-blue)';
         }
 
         return `
-          <div class="cal-event-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #F1F5F9; gap:8px;">
-            <div style="display:flex; flex-direction:column; gap:3px; min-width:0; flex:1;">
-              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                <span style="font-weight:600; font-size:13px; color:#0F172A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(ev.title)}</span>
-                <span style="font-size:10px; font-weight:700; background:${badgeBg}; color:${badgeColor}; padding:1px 6px; border-radius:4px; flex-shrink:0;">${badgeText}</span>
+          <div class="cal-event-item">
+            <div class="cal-event-item__left">
+              <div class="cal-event-item__top">
+                <span class="cal-event-item__title">${esc(ev.title)}</span>
+                <span class="cal-event-item__badge" style="background:${badgeBg}; color:${badgeColor};">${badgeText}</span>
               </div>
-              <span style="font-size:11.5px; color:#64748B;">${esc(ev.subtitle)}</span>
+              <span class="cal-event-item__sub">${esc(ev.subtitle)}</span>
             </div>
-            <span class="mono" style="font-weight:700; font-size:13.5px; color:${isIncome ? '#059669' : '#E11D48'}; flex-shrink:0;">
+            <span class="mono cal-event-item__amt ${isIncome ? 'is-in' : 'is-out'}" data-privacy-blur>
               ${isIncome ? '+' : '−'}${tryFmt(ev.amount)}
             </span>
           </div>`;
@@ -308,15 +404,17 @@
     }
 
     host.innerHTML = `
-      <div class="cal-detail-head" style="margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #E2E8F0;">
-        <span style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.04em;">GÜNLÜK HAREKET ÖZETİ</span>
-        <h3 style="font-size:16px; font-weight:700; color:#0F172A; margin:4px 0;">${dayName}</h3>
-        <div style="display:flex; gap:14px; margin-top:8px; font-size:12px;" class="mono">
-          <span style="color:#059669; font-weight:600;">Giriş: +${tryFmt(totalIn)}</span>
-          <span style="color:#E11D48; font-weight:600;">Çıkış: −${tryFmt(totalOut)}</span>
+      <div class="cal-detail-head">
+        <div>
+          <span class="cal-detail-kicker">GÜNLÜK HAREKET ÖZETİ</span>
+          <h3 class="cal-detail-date">${dayName}</h3>
+        </div>
+        <div class="cal-detail-totals mono">
+          <span class="is-in" data-privacy-blur>+${tryFmt(totalIn)}</span>
+          <span class="is-out" data-privacy-blur>−${tryFmt(totalOut)}</span>
         </div>
       </div>
-      <div class="cal-detail-list" style="max-height:380px; overflow-y:auto; padding-right:4px;">
+      <div class="cal-detail-list">
         ${listHtml}
       </div>
     `;
@@ -334,74 +432,67 @@
 
     if (weekdaysHost) {
       weekdaysHost.innerHTML = WEEKDAYS_TR.map(
-        (day) => `<div class="cal-weekday" style="text-align:center; font-weight:700; font-size:12px; color:#64748B; padding:8px 0;">${day}</div>`
+        (day) => `<div class="cal-weekday">${day}</div>`
       ).join('');
-      weekdaysHost.style.display = 'grid';
-      weekdaysHost.style.gridTemplateColumns = 'repeat(7, 1fr)';
-      weekdaysHost.style.borderBottom = '1px solid #E2E8F0';
     }
 
-    const firstDayIndex = new Date(year, month, 1).getDay(); // 0 is Sunday
-    const startOffset = (firstDayIndex + 6) % 7; // Convert to Monday-first (0 is Monday, 6 is Sunday)
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const startOffset = (firstDayIndex + 6) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
+    const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+    const rowCount = totalCells / 7;
 
     const todayStr = new Date().toISOString().slice(0, 10);
     const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-
-    // Filter events based on active tab
     const filteredEvents = filterEvents(allMonthEvents);
 
     let cellsHtml = '';
 
-    // Önceki aydan taşan günler
     for (let i = startOffset - 1; i >= 0; i--) {
       const prevD = daysInPrevMonth - i;
-      cellsHtml += `<div class="cal-cell cal-cell--muted" style="min-height:92px; padding:6px; background:#FAFAFA; border:1px solid #F1F5F9; color:#CBD5E1; font-size:12px;">${prevD}</div>`;
+      cellsHtml += `<div class="cal-cell cal-cell--muted"><span class="cal-day-num mono">${prevD}</span></div>`;
     }
 
-    // Bu ayın günleri
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${monthKey}-${String(d).padStart(2, '0')}`;
       const isToday = dateStr === todayStr;
       const isSelected = dateStr === selectedDateStr;
       const dayEvs = filteredEvents.filter((e) => e.date === dateStr);
 
-      const pillsHtml = dayEvs.slice(0, 3).map((ev) => {
+      const pillsHtml = dayEvs.slice(0, 2).map((ev) => {
         const isIncome = ev.direction === 'in';
-        const bg = isIncome 
-          ? '#ECFDF5' 
-          : (ev.type === 'card' ? '#EFF6FF' : (ev.type === 'installment' ? '#F5F3FF' : '#FEF2F2'));
-        const color = isIncome 
-          ? '#059669' 
-          : (ev.type === 'card' ? '#2563EB' : (ev.type === 'installment' ? '#7C3AED' : '#DC2626'));
+        const pillCls = isIncome
+          ? 'cal-pill--in'
+          : (ev.type === 'card' || ev.type === 'card-pay' ? 'cal-pill--card' : (ev.type === 'installment' ? 'cal-pill--inst' : 'cal-pill--out'));
         const shortAmt = tryFmt(ev.amount);
         return `
-          <div class="cal-pill" style="background:${bg}; color:${color}; font-size:10px; font-weight:600; padding:2px 5px; border-radius:4px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(ev.title)} (${shortAmt})">
-            ${isIncome ? '+' : '−'}${shortAmt} ${esc(ev.title)}
+          <div class="cal-pill ${pillCls}" title="${esc(ev.title)} (${shortAmt})">
+            <span class="mono">${isIncome ? '+' : '−'}${shortAmt}</span> ${esc(ev.title)}
           </div>`;
       }).join('');
 
-      const moreCount = dayEvs.length > 3 ? dayEvs.length - 3 : 0;
-      const moreHtml = moreCount > 0 ? `<div style="font-size:9.5px; font-weight:600; color:#64748B; margin-top:2px;">+${moreCount} diğer</div>` : '';
+      const moreCount = dayEvs.length > 2 ? dayEvs.length - 2 : 0;
+      const moreHtml = moreCount > 0 ? `<div class="cal-pill-more mono">+${moreCount} işlem daha</div>` : '';
 
       cellsHtml += `
-        <div class="cal-cell ${isToday ? 'cal-cell--today' : ''} ${isSelected ? 'cal-cell--selected' : ''}" data-date="${dateStr}" style="min-height:92px; padding:7px; border:1px solid ${isSelected ? '#3B82F6' : '#E2E8F0'}; border-radius:10px; cursor:pointer; background:${isSelected ? '#EFF6FF' : isToday ? '#FEFCE8' : '#FFFFFF'}; box-shadow:${isSelected ? '0 0 0 1px #3B82F6' : 'none'}; transition:all 120ms ease;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="mono" style="font-weight:700; font-size:12.5px; color:${isToday ? '#B45309' : '#0F172A'};">${d}</span>
-            ${isToday ? '<span style="font-size:9px; background:#FDE68A; color:#92400E; padding:1px 5px; border-radius:4px; font-weight:700;">BUGÜN</span>' : ''}
+        <div class="cal-cell ${isToday ? 'cal-cell--today' : ''} ${isSelected ? 'cal-cell--selected' : ''}" data-date="${dateStr}">
+          <div class="cal-cell-top">
+            <span class="cal-day-num mono">${d}</span>
+            ${isToday ? '<span class="cal-today-tag">BUGÜN</span>' : ''}
           </div>
-          <div class="cal-pills-wrap" style="margin-top:2px;">${pillsHtml}${moreHtml}</div>
+          <div class="cal-pills-wrap">${pillsHtml}${moreHtml}</div>
         </div>`;
     }
 
-    daysHost.innerHTML = cellsHtml;
-    daysHost.style.display = 'grid';
-    daysHost.style.gridTemplateColumns = 'repeat(7, 1fr)';
-    daysHost.style.gap = '6px';
-    daysHost.style.marginTop = '8px';
+    const trailingCount = totalCells - (startOffset + daysInMonth);
+    for (let t = 1; t <= trailingCount; t++) {
+      cellsHtml += `<div class="cal-cell cal-cell--muted"><span class="cal-day-num mono">${t}</span></div>`;
+    }
 
-    // Gün Seçimi Olayı
+    daysHost.style.gridTemplateRows = `repeat(${rowCount}, minmax(0, 1fr))`;
+    daysHost.innerHTML = cellsHtml;
+
     daysHost.querySelectorAll('.cal-cell[data-date]').forEach((cell) => {
       cell.addEventListener('click', () => {
         selectedDateStr = cell.dataset.date;
@@ -412,8 +503,9 @@
       });
     });
 
-    const activeDayEvs = allMonthEvents.filter((e) => e.date === selectedDateStr);
+    const activeDayEvs = filteredEvents.filter((e) => e.date === selectedDateStr);
     renderDayDetail(selectedDateStr, activeDayEvs);
+    renderMonthSummaryCard(year, month, allMonthEvents);
   }
 
   function render() {
@@ -450,14 +542,17 @@
       btn.addEventListener('click', () => {
         activeFilter = btn.dataset.calFilter || 'all';
         document.querySelectorAll('.cal-filter-btn').forEach((b) => {
-          const on = b === btn;
-          b.classList.toggle('is-active', on);
-          b.style.background = on ? '#FFFFFF' : 'transparent';
-          b.style.color = on ? '#0F172A' : '#64748B';
-          b.style.boxShadow = on ? '0 1px 3px rgba(0,0,0,0.08)' : 'none';
+          b.classList.toggle('is-active', b === btn);
         });
         render();
       });
+    });
+
+    document.getElementById('calMonthSummaryCard')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-cal-jump]');
+      if (!btn) return;
+      selectedDateStr = btn.dataset.calJump || selectedDateStr;
+      render();
     });
 
     State.on('transactions:changed', render);

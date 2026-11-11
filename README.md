@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Sürüm-v1.5.1-2563EB?style=for-the-badge&logo=rocket" alt="Sürüm" />
+  <img src="https://img.shields.io/badge/Sürüm-v1.6.0-2563EB?style=for-the-badge&logo=rocket" alt="Sürüm" />
   <img src="https://img.shields.io/badge/.NET-9.0_Windows-512BD4?style=for-the-badge&logo=dotnet" alt=".NET 9" />
   <img src="https://img.shields.io/badge/Şifreleme-AES--256--GCM-059669?style=for-the-badge&logo=shield" alt="AES-256-GCM" />
   <img src="https://img.shields.io/badge/Çalışma_Ortamı-WebView2_Desktop-0284C7?style=for-the-badge&logo=microsoftedge" alt="WebView2" />
@@ -187,6 +187,7 @@ dotnet publish src-desktop/Vaulty.csproj -c Release -r win-x64 --self-contained 
 
 En son sürüm notları, yeni eklenen özellikler ve hata düzeltmeleri için [CHANGELOG.md](CHANGELOG.md) dosyasına göz atabilirsiniz.
 
+* **v1.6.0** — Yenilenen Açık/Koyu tema (`theme.css`), akıcı mikro animasyonlar (`motion.js`), 3 farklı kart kaplamasına sahip interaktif 3D cüzdan vitrini, kaydırmasız tek ekran deneyimine geçirilen İşlemler / Borç & Alacak / Varlıklarım / Nakit Akışı Takvimi ekranları, sadeleştirilmiş sol menü ve giriş ekranı PIN maskeleme düzeltmesi.
 * **v1.5.1** — AES-256-GCM tam disk şifrelemesi, tüm işlemleri gösteren Nakit Akış Takvimi, 6 haneli PIN güvenlik denetleyicisi, çoklu para birimi grid düzenlemesi ve UI kontrast düzeltmeleri.
 * **v1.5.0** — Modüler CSS/JS mimarisi tamamlandı, tekil `Vaulty.exe` uygulaması olarak birleştirildi.
 

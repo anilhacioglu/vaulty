@@ -9,10 +9,10 @@
     <ApplicationIcon>..\assets\app-icon.ico</ApplicationIcon>
     <AssemblyName>Vaulty</AssemblyName>
     <RootNamespace>Vaulty</RootNamespace>
-    <Version>1.5.1.0</Version>
-    <AssemblyVersion>1.5.1.0</AssemblyVersion>
-    <FileVersion>1.5.1.0</FileVersion>
-    <InformationalVersion>1.5.1.0</InformationalVersion>
+    <Version>1.6.0.0</Version>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
+    <InformationalVersion>1.6.0.0</InformationalVersion>
     <Product>Vaulty</Product>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
@@ -125,6 +125,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="..\views\views.css">
       <LogicalName>WebAssets.views.views.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\theme.css">
+      <LogicalName>WebAssets.theme.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\motion.js">
+      <LogicalName>WebAssets.motion.js</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\assets\app-icon.ico">
       <LogicalName>WebAssets.assets.app-icon.ico</LogicalName>

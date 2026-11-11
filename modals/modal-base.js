@@ -328,9 +328,9 @@
     if (!dlg) {
       dlg = mountModal('vaultyConfirmDlg', `
 <div id="vaultyConfirmDlg" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="vaultyConfirmTitle" hidden style="display: none !important; pointer-events: none !important; z-index: 11000 !important;">
-  <div class="modal-box modal-box--confirm" style="width: 440px; max-width: 92vw; padding: 24px; border-radius: 18px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); border: 1px solid #E2E8F0; background: #FFFFFF;">
+  <div class="modal-box modal-box--confirm" style="width: 440px; max-width: 92vw; padding: 24px; border-radius: 18px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); border: 1px solid var(--border); background: var(--bg-surface);">
     <div style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px;">
-      <div id="vaultyConfirmIconBox" style="width: 44px; height: 44px; border-radius: 12px; background: #FEF2F2; color: #DC2626; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+      <div id="vaultyConfirmIconBox" style="width: 44px; height: 44px; border-radius: 12px; background: var(--tint-red); color: var(--ink-red); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <svg id="vaultyConfirmDangerIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
         </svg>
@@ -339,13 +339,13 @@
         </svg>
       </div>
       <div style="flex: 1; min-width: 0;">
-        <h3 id="vaultyConfirmTitle" style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #0F172A; line-height: 1.3;">
+        <h3 id="vaultyConfirmTitle" style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.3;">
           İşlemi Silmek İstiyor Musunuz?
         </h3>
-        <p id="vaultyConfirmMessage" style="margin: 0; font-size: 13.5px; color: #64748B; line-height: 1.5;">
+        <p id="vaultyConfirmMessage" style="margin: 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;">
           Bu işlem geri alınamaz.
         </p>
-        <div id="vaultyConfirmDetail" style="margin-top: 10px; font-size: 12.5px; padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; color: #334155; line-height: 1.5; white-space: pre-line; display: none;"></div>
+        <div id="vaultyConfirmDetail" style="margin-top: 10px; font-size: 12.5px; padding: 10px 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; color: var(--text-2); line-height: 1.5; white-space: pre-line; display: none;"></div>
       </div>
     </div>
     <div style="display: flex; justify-content: flex-end; gap: 10px;">

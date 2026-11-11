@@ -57,6 +57,199 @@
     animateDashCounters();
   }
 
+  let _lastTrajW = 0;
+  let _lastTrajArgs = null;
+
+  function renderHeroBalanceTrajectory(flow6, netWorth, monthNet, dues) {
+    const host = document.getElementById('heroBalanceSpark');
+    if (!host) return;
+    _lastTrajArgs = [flow6, netWorth, monthNet, dues];
+
+    const shortTry = (State && State.shortTry) ? State.shortTry : (v) => `${Math.round(v / 1000)}B ₺`;
+
+    // Son 12 işlem gününün gerçek nakit akışından geriye dönük dalgalı bakiye seyri oluştur
+    const byDay = {};
+    (Array.isArray(State.tx) ? State.tx : []).forEach((t) => {
+      if (!t || !t.date) return;
+      const dStr = String(t.date).slice(0, 10);
+      const amt = Number((t.amount ?? t.tutar) || 0);
+      if (amt <= 0) return;
+      if (!byDay[dStr]) byDay[dStr] = { date: dStr, inc: 0, exp: 0 };
+      if (t.type === 'Gelir') byDay[dStr].inc += amt;
+      else if (t.type === 'Gider' || t.type === 'Kart Borcu Ödeme') byDay[dStr].exp += amt;
+    });
+
+    const sortedDays = Object.values(byDay).sort((a, b) => (a.date < b.date ? -1 : 1)).slice(-10);
+    let series = [];
+    if (sortedDays.length >= 3) {
+      let running = netWorth;
+      const fmtDay = (iso) => {
+        const p = iso.split('-').map(Number);
+        const dt = new Date(p[0], p[1] - 1, p[2]);
+        return new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' }).format(dt);
+      };
+      for (let i = sortedDays.length - 1; i >= 0; i--) {
+        const d = sortedDays[i];
+        series.unshift({ label: fmtDay(d.date), fullDate: d.date, val: round2(running), net: round2(d.inc - d.exp) });
+        running -= (d.inc - d.exp);
+      }
+    } else {
+      const ptsData = Array.isArray(flow6) && flow6.length ? flow6 : [
+        { m: 'Haz', inc: 0, exp: 0 }, { m: 'Tem', inc: 0, exp: 0 }, { m: 'Ağu', inc: 0, exp: 0 },
+        { m: 'Eyl', inc: 0, exp: 0 }, { m: 'Eki', inc: 0, exp: 0 }, { m: 'Kas', inc: 0, exp: 0 },
+      ];
+      let running = netWorth;
+      for (let i = ptsData.length - 1; i >= 0; i--) {
+        series.unshift({ label: ptsData[i].m, fullDate: ptsData[i].m, val: round2(running), net: round2(ptsData[i].inc - ptsData[i].exp) });
+        running -= (ptsData[i].inc - ptsData[i].exp);
+      }
+    }
+
+    const duesSum = round2((dues || []).reduce((s, x) => s + remainingAmount(x), 0));
+    const projMid = round2(netWorth - duesSum * 0.45 + (monthNet > 0 ? monthNet * 0.12 : 0));
+    const projEnd = round2(netWorth - duesSum + (monthNet > 0 ? monthNet * 0.35 : 0));
+    const projPts = [
+      { label: '7 Gün', fullDate: '7 Günlük Tahmin', val: projMid, net: projMid - netWorth, isForecast: true },
+      { label: 'Ay Sonu', fullDate: 'Ay Sonu Öngörü', val: projEnd, net: projEnd - netWorth, isForecast: true },
+    ];
+
+    const allPts = [...series, ...projPts];
+    const allVals = allPts.map((p) => p.val);
+    const rawMin = Math.min(...allVals);
+    const rawMax = Math.max(...allVals);
+    const pad = Math.max(2000, (rawMax - rawMin) * 0.18);
+    const minV = rawMin - pad * 0.5;
+    const maxV = rawMax + pad;
+    const span = maxV - minV || 1000;
+
+    const W = Math.max(460, Math.round(host.clientWidth || 720));
+    _lastTrajW = W;
+    const H = 154;
+    const L = 58;
+    const R = 22;
+    const T = 28;
+    const B = 24;
+    const splitIdx = series.length - 1;
+
+    const xOf = (idx) => L + (idx * (W - L - R)) / Math.max(1, allPts.length - 1);
+    const yOf = (v) => T + (1 - (v - minV) / span) * (H - T - B);
+
+    const coords = allPts.map((p, i) => [xOf(i), yOf(p.val)]);
+    const realCoords = coords.slice(0, series.length);
+    const foreCoords = coords.slice(splitIdx);
+
+    const realPath = realCoords.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+    const areaPath = `${realPath} L${realCoords[splitIdx][0].toFixed(1)} ${H - B} L${realCoords[0][0].toFixed(1)} ${H - B} Z`;
+    const forecastPath = foreCoords.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+
+    const todayX = realCoords[splitIdx][0];
+
+    // Yatay kilavuz cizgileri ve Y ekseni olcegi (3 seviye)
+    let gridHtml = '';
+    for (let g = 0; g <= 2; g++) {
+      const v = minV + (span / 2) * g;
+      const py = yOf(v);
+      gridHtml += `<line x1="${L}" x2="${W - R}" y1="${py.toFixed(1)}" y2="${py.toFixed(1)}" stroke="var(--border-subtle)" stroke-width="1"/>`;
+      gridHtml += `<text x="${L - 10}" y="${(py + 3.5).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${shortTry(v)}</text>`;
+    }
+
+    const dotsHtml = coords.map((p, i) => {
+      const pt = allPts[i];
+      const col = pt.isForecast ? '#FBBF24' : (pt.net >= 0 ? '#3B82F6' : '#FB7185');
+      const r = i === splitIdx ? 5 : 3.6;
+      return `<circle class="vy-traj-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${col}" stroke="var(--bg-surface)" stroke-width="1.8" style="--i:${i}" data-traj-i="${i}"/>`;
+    }).join('');
+
+    // X ekseni etiketleri (sikismayi onlemek icin seyrelt)
+    const xLabelsHtml = allPts.map((pt, i) => {
+      const show = i === 0 || i === splitIdx || i === allPts.length - 1 || (allPts.length <= 9 ? i % 2 === 0 : i % 3 === 0);
+      if (!show) return '';
+      const anchor = i === allPts.length - 1 ? 'end' : 'middle';
+      return `<text x="${coords[i][0].toFixed(1)}" y="${H - 5}" text-anchor="${anchor}" fill="var(--text-muted)" font-size="11">${esc(pt.label)}</text>`;
+    }).join('');
+
+    const hitSlotsHtml = coords.map((p, i) => {
+      const slotW = (W - L - R) / Math.max(1, allPts.length - 1);
+      return `<rect class="vy-traj-hit" data-traj-i="${i}" x="${(p[0] - slotW / 2).toFixed(1)}" y="${T - 4}" width="${slotW.toFixed(1)}" height="${H - T - B + 8}" fill="transparent"/>`;
+    }).join('');
+
+    host.innerHTML = `
+      <div class="vy-traj-box">
+        <div class="vy-traj-svg-wrap">
+          <svg class="vy-traj-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Bakiye seyri ve tahmin grafiği">
+            <defs>
+              <linearGradient id="vyTrajArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2F6BFF" stop-opacity="0.32"/>
+                <stop offset="100%" stop-color="#2F6BFF" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            ${gridHtml}
+            <line x1="${todayX.toFixed(1)}" y1="22" x2="${todayX.toFixed(1)}" y2="${H - B}" stroke="var(--border-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <line class="vy-traj-cross" id="vyTrajCross" x1="0" y1="${T}" x2="0" y2="${H - B}" stroke="var(--electric)" stroke-width="1" stroke-dasharray="2 2" style="opacity:0;"/>
+            <path class="vy-traj-area" d="${areaPath}" fill="url(#vyTrajArea)"/>
+            <path class="vy-traj-line" d="${realPath}" fill="none" stroke="#2F6BFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/>
+            <path d="${forecastPath}" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-dasharray="4 4" stroke-linecap="round"/>
+            ${dotsHtml}
+            <rect x="${(todayX - 25).toFixed(1)}" y="2" width="50" height="18" rx="9" fill="var(--bg-muted)" stroke="var(--border)"/>
+            <text x="${todayX.toFixed(1)}" y="14" text-anchor="middle" fill="var(--text-1)" font-size="10" font-weight="700">Bugün</text>
+            ${xLabelsHtml}
+            ${hitSlotsHtml}
+          </svg>
+          <div class="tip vy-traj-tip" id="vyTrajTip"></div>
+        </div>
+        <div class="vy-traj-foot">
+          <div class="vy-traj-legend">
+            <span><i class="vy-l-line"></i>Bakiye Seyri</span>
+            <span><i class="vy-l-dash"></i>Tahmin</span>
+            <span><i class="vy-l-dot" style="background:#3B82F6"></i>Artış</span>
+            <span><i class="vy-l-dot" style="background:#FB7185"></i>Çıkış</span>
+            <span><i class="vy-l-dot" style="background:#FBBF24"></i>Öngörü</span>
+          </div>
+          <div class="vy-traj-proj mono" data-privacy-blur>Ay sonu öngörü: <strong>${tryFmt(projEnd)}</strong></div>
+        </div>
+      </div>`;
+
+    const wrap = host.querySelector('.vy-traj-svg-wrap');
+    const tip = document.getElementById('vyTrajTip');
+    const cross = document.getElementById('vyTrajCross');
+    if (wrap && tip) {
+      wrap.querySelectorAll('.vy-traj-hit').forEach((rect) => {
+        rect.addEventListener('mousemove', () => {
+          const i = Number(rect.dataset.trajI);
+          const pt = allPts[i];
+          if (!pt) return;
+          const xPct = (coords[i][0] / W) * 100;
+          if (cross) {
+            cross.setAttribute('x1', coords[i][0].toFixed(1));
+            cross.setAttribute('x2', coords[i][0].toFixed(1));
+            cross.style.opacity = '0.7';
+          }
+          const delta = pt.net;
+          tip.innerHTML = `<strong>${esc(pt.fullDate)}</strong><br>Bakiye: <span class="mono">${tryFmt(pt.val)}</span><br><span style="color:${delta >= 0 ? 'var(--ink-green)' : 'var(--ink-red)'}">${delta >= 0 ? '+' : '−'}${tryFmt(Math.abs(delta))}</span>`;
+          tip.style.display = 'block';
+          tip.style.left = `clamp(68px, ${xPct.toFixed(1)}%, calc(100% - 68px))`;
+          tip.style.transform = 'translateX(-50%)';
+          tip.style.top = '4px';
+        });
+      });
+      wrap.addEventListener('mouseleave', () => {
+        tip.style.display = 'none';
+        if (cross) cross.style.opacity = '0';
+      });
+    }
+  }
+
+  function updateSidebarChrome(monthNet, dues, duesTotal) {
+    const bellDot = document.getElementById('vyBellDot');
+    const bellBtn = document.getElementById('vyBellBtn');
+    if (bellDot) {
+      bellDot.hidden = dues.length === 0;
+    }
+    if (bellBtn) {
+      bellBtn.classList.toggle('has-notif', dues.length > 0);
+    }
+  }
+
   function renderMetrics() {
     const kpiHost = document.getElementById('kpis');
     if (!kpiHost) return;
@@ -96,36 +289,51 @@
       const overdueCount = dues.filter((x) => State.daysTo(x.dueDate) < 0).length;
 
       const flow6 = window.Vaulty.Charts?.getCashflowLast6Months ? window.Vaulty.Charts.getCashflowLast6Months() : [];
-      const netTrend = flow6.map((d) => d.inc - d.exp);
-      const netColor = monthNet >= 0 ? '#10B981' : '#E11D48';
+
+      const insightEl = document.getElementById('dashHeroInsight');
+      if (insightEl) {
+        if (dues.length > 0) {
+          insightEl.textContent = `Önümüzdeki 14 günde ${dues.length} ödeme (${tryFmt(duesTotal)}) bekliyor · ${monthName} net nakit: ${monthNet >= 0 ? '+' : '−'}${tryFmt(Math.abs(monthNet))}`;
+        } else {
+          insightEl.textContent = `${monthName} ayında ${monthNet >= 0 ? '+' : '−'}${tryFmt(Math.abs(monthNet))} net akış · ${State.accounts.length} aktif hesap`;
+        }
+      }
 
       kpiHost.innerHTML = `
-        <article class="dash-card dash-kpi dash-anim" style="--i:0">
-          <div class="dash-kpi__top">
-            <span class="dash-kpi__label">Net Varlık Değeri</span>
-            <span class="dash-pill dash-pill--slate mono">${State.accounts.length} aktif hesap</span>
+        <div class="vy-balance-hero">
+          <div class="vy-balance-hero__val mono" data-privacy-blur data-count="${Math.abs(netWorth)}" data-prefix="${netWorth < 0 ? '−' : ''}">${netWorth < 0 ? '−' : ''}${tryFmt(Math.abs(netWorth))}</div>
+          <div class="vy-balance-hero__meta">
+            <span class="dash-pill ${monthNet >= 0 ? 'dash-pill--emerald' : 'dash-pill--rose'} mono">
+              ${monthNet >= 0 ? '▲' : '▼'} ${monthNet >= 0 ? '+' : '−'}${tryFmt(Math.abs(monthNet))}
+            </span>
+            <span class="vy-balance-hero__sub">${monthName} ayı net nakit farkı</span>
           </div>
-          <div class="dash-kpi__value mono" data-count="${netWorth}">${tryFmt(netWorth)}</div>
-          <div class="dash-kpi__foot"><span>Likidite + Alacak − Borçlar</span></div>
-        </article>
+        </div>
+        <div class="vy-mini-stats">
+          <div class="vy-mini-stat">
+            <span class="vy-mini-stat__lbl">Likit Nakit</span>
+            <strong class="vy-mini-stat__val mono" data-privacy-blur data-count="${totalLiquidity}">${tryFmt(totalLiquidity)}</strong>
+            <span class="vy-mini-stat__sub">${liquidAccs.length} hesap</span>
+          </div>
+          <div class="vy-mini-stat">
+            <span class="vy-mini-stat__lbl">Alacaklar</span>
+            <strong class="vy-mini-stat__val mono" data-privacy-blur data-count="${totalRec}">${tryFmt(totalRec)}</strong>
+            <span class="vy-mini-stat__sub">${activeRecs.length} açık kayıt</span>
+          </div>
+          <div class="vy-mini-stat">
+            <span class="vy-mini-stat__lbl">Kart Borcu</span>
+            <strong class="vy-mini-stat__val mono" data-privacy-blur data-count="${totalCardDebt}">${tryFmt(totalCardDebt)}</strong>
+            <span class="vy-mini-stat__sub">${creditAccs.length} kredi kartı</span>
+          </div>
+          <div class="vy-mini-stat">
+            <span class="vy-mini-stat__lbl">${overdueCount ? overdueCount + ' Gecikmiş Vade' : '14 Gün Vade'}</span>
+            <strong class="vy-mini-stat__val mono" style="${overdueCount ? 'color:var(--ink-red)' : ''}" data-privacy-blur data-count="${duesTotal}">${tryFmt(duesTotal)}</strong>
+            <span class="vy-mini-stat__sub">${dues.length} yaklaşan ödeme</span>
+          </div>
+        </div>`;
 
-        <article class="dash-card dash-kpi dash-anim" style="--i:1">
-          <div class="dash-kpi__top">
-            <span class="dash-kpi__label">Bu Ayın Nakit Dengesi</span>
-            <span class="dash-pill ${monthNet >= 0 ? 'dash-pill--emerald' : 'dash-pill--rose'} mono">${monthNet >= 0 ? 'Pozitif' : 'Negatif'}</span>
-          </div>
-          <div class="dash-kpi__value mono ${monthNet >= 0 ? 'is-pos' : 'is-neg'}" data-count="${Math.abs(monthNet)}" data-prefix="${monthNet >= 0 ? '+' : '-'}">${monthNet >= 0 ? '+' : '-'}${tryFmt(Math.abs(monthNet))}</div>
-          <div class="dash-kpi__foot"><span>Gelir − Gider · ${monthName}</span>${dashSparkline(netTrend, netColor)}</div>
-        </article>
-
-        <article class="dash-card dash-kpi dash-anim" style="--i:2">
-          <div class="dash-kpi__top">
-            <span class="dash-kpi__label">14 Gün İçinde Vadesi Gelenler</span>
-            <span class="dash-pill ${overdueCount ? 'dash-pill--rose' : 'dash-pill--amber'} mono">${overdueCount ? overdueCount + ' gecikmiş' : '14 gün içinde'}</span>
-          </div>
-          <div class="dash-kpi__value mono" data-count="${duesTotal}">${tryFmt(duesTotal)}</div>
-          <div class="dash-kpi__foot"><span>${dues.length} ödeme · Yaklaşan ve geciken borçlar</span></div>
-        </article>`;
+      renderHeroBalanceTrajectory(flow6, netWorth, monthNet, dues);
+      updateSidebarChrome(monthNet, dues, duesTotal);
     } catch (err) {
       console.error('KPI metrics error:', err);
     }
@@ -228,43 +436,43 @@
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px;">
           <!-- Kart 1: MoM Karşılaştırma -->
-          <div class="dash-kpi" style="padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px;">
+          <div class="dash-kpi" style="padding: 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 11px; font-weight: 600; color: #64748B;">GEÇEN AYA KIYASLA</span>
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">GEÇEN AYA KIYASLA</span>
               <span class="dash-pill ${momPillCls} mono" style="font-size: 10px;">MoM Trend</span>
             </div>
-            <div style="font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 4px;">${momText}</div>
-            <span style="font-size: 11px; color: #64748B;">Geçen ay toplam: <strong class="mono" data-privacy-blur>${tryFmt(lastMonthExp)}</strong></span>
+            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${momText}</div>
+            <span style="font-size: 11px; color: var(--text-secondary);">Geçen ay toplam: <strong class="mono" data-privacy-blur>${tryFmt(lastMonthExp)}</strong></span>
           </div>
 
           <!-- Kart 2: Tasarruf Oranı -->
-          <div class="dash-kpi" style="padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px;">
+          <div class="dash-kpi" style="padding: 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 11px; font-weight: 600; color: #64748B;">AYLIK TASARRUF ORANI</span>
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">AYLIK TASARRUF ORANI</span>
               <span class="dash-pill ${savingsRate >= 20 ? 'dash-pill--emerald' : 'dash-pill--amber'} mono" style="font-size: 10px;">%${savingsRate}</span>
             </div>
-            <div style="font-size: 15px; font-weight: 700; color: #059669; margin-bottom: 4px;">%${savingsRate} Tasarruf</div>
-            <span style="font-size: 11px; color: #64748B;">Gelirin birikime dönen payı</span>
+            <div style="font-size: 15px; font-weight: 700; color: var(--ink-green); margin-bottom: 4px;">%${savingsRate} Tasarruf</div>
+            <span style="font-size: 11px; color: var(--text-secondary);">Gelirin birikime dönen payı</span>
           </div>
 
           <!-- Kart 3: Lider Kategori -->
-          <div class="dash-kpi" style="padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px;">
+          <div class="dash-kpi" style="padding: 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 11px; font-weight: 600; color: #64748B;">EN ÇOK HARCANAN ALAN</span>
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">EN ÇOK HARCANAN ALAN</span>
               <span class="dash-pill dash-pill--rose mono" style="font-size: 10px;">%${topCatShare} pay</span>
             </div>
-            <div style="font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 4px;">${esc(topCat)}</div>
-            <span style="font-size: 11px; color: #64748B;">Bu ay harcanan: <strong class="mono" data-privacy-blur>${tryFmt(topCatAmt)}</strong></span>
+            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${esc(topCat)}</div>
+            <span style="font-size: 11px; color: var(--text-secondary);">Bu ay harcanan: <strong class="mono" data-privacy-blur>${tryFmt(topCatAmt)}</strong></span>
           </div>
 
           <!-- Kart 4: En Yoğun Gün -->
-          <div class="dash-kpi" style="padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px;">
+          <div class="dash-kpi" style="padding: 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 11px; font-weight: 600; color: #64748B;">EN YOĞUN HARCAMA GÜNÜ</span>
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">EN YOĞUN HARCAMA GÜNÜ</span>
               <span class="dash-pill dash-pill--indigo mono" style="font-size: 10px;">Davranışsal</span>
             </div>
-            <div style="font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 4px;">${peakDayName} Günleri</div>
-            <span style="font-size: 11px; color: #64748B;">Haftalık pik harcama noktası</span>
+            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${peakDayName} Günleri</div>
+            <span style="font-size: 11px; color: var(--text-secondary);">Haftalık pik harcama noktası</span>
           </div>
         </div>
       `;
@@ -286,8 +494,10 @@
   }
 
   function init() {
-    // Note: Action buttons (dashAllTxLink, dashAddAccBtn, openNewTxFromDashBtn)
-    // are delegated centrally in core/events.js to prevent double-execution.
+    document.getElementById('dashAllCardsLink')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.Vaulty.Sidebar?.activateNavItem?.('assets');
+    });
 
     State.on('transactions:changed', () => {
       renderMetrics();
@@ -312,6 +522,20 @@
       renderMetrics();
       window.Vaulty.Tables?.renderRadarTable?.();
     });
+
+    const sparkHost = document.getElementById('heroBalanceSpark');
+    if (sparkHost && window.ResizeObserver) {
+      let rafTraj = 0;
+      const ro = new ResizeObserver(() => {
+        const w = Math.round(sparkHost.clientWidth || 0);
+        if (w < 120 || Math.abs(w - _lastTrajW) <= 12) return;
+        cancelAnimationFrame(rafTraj);
+        rafTraj = requestAnimationFrame(() => {
+          if (_lastTrajArgs) renderHeroBalanceTrajectory(..._lastTrajArgs);
+        });
+      });
+      ro.observe(sparkHost);
+    }
   }
 
   const Overview = {

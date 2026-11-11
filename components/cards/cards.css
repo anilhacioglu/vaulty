@@ -4,8 +4,8 @@
 
 /* KPI Kartları */
 .dc-kpi-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px 20px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
@@ -23,14 +23,14 @@
 .dc-kpi-card__label {
   font-size: 13px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .dc-kpi-card__value {
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .dc-kpi-badge {
@@ -44,18 +44,18 @@
 }
 
 .dc-kpi-badge--emerald {
-  background: #ECFDF5;
-  color: #059669;
+  background: var(--tint-green);
+  color: var(--ink-green);
 }
 
 .dc-kpi-badge--rose {
-  background: #FFF1F2;
-  color: #E11D48;
+  background: var(--tint-red);
+  color: var(--ink-red);
 }
 
 .dc-kpi-badge--blue {
-  background: #EFF6FF;
-  color: #2563EB;
+  background: var(--tint-blue);
+  color: var(--ink-blue);
 }
 
 /* Sol Liste: Cüzdan Kartları Sarmalayıcısı */
@@ -150,7 +150,7 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #94A3B8;
+  color: var(--text-muted);
   letter-spacing: 0.01em;
 }
 
@@ -182,7 +182,7 @@
 }
 
 .wc-chip--silver {
-  background: linear-gradient(135deg, #F1F5F9 0%, #94A3B8 50%, #CBD5E1 100%);
+  background: linear-gradient(135deg, var(--bg-muted) 0%, #94A3B8 50%, #CBD5E1 100%);
   border: 1px solid rgba(255, 255, 255, 0.45);
 }
 
@@ -210,7 +210,7 @@
 .wc-tag-right {
   font-size: 12.5px;
   font-weight: 500;
-  color: #94A3B8;
+  color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
@@ -281,7 +281,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #94A3B8;
+  color: var(--text-muted);
   padding: 3px 8px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.05);

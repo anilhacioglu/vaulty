@@ -1371,10 +1371,10 @@
       }
       if (envBadge) {
         if (isTest) {
-          envBadge.innerHTML = '<i class="dot dot--amber" style="background:#D97706;"></i>Test Kasası · İzolasyon';
-          envBadge.style.background = '#FFFBEB';
-          envBadge.style.borderColor = '#FDE68A';
-          envBadge.style.color = '#B45309';
+          envBadge.innerHTML = '<i class="dot dot--amber" style="background:var(--ink-amber);"></i>Test Kasası · İzolasyon';
+          envBadge.style.background = 'var(--tint-amber-0)';
+          envBadge.style.borderColor = 'var(--tint-amber)';
+          envBadge.style.color = 'var(--ink-amber)';
         } else {
           envBadge.innerHTML = '<i class="dot"></i>Yerel Kasa · Şifreli';
           envBadge.style.background = '';

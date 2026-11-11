@@ -81,7 +81,7 @@
       <input type="hidden" id="savingsGoalIdInput" value="">
       <header class="cd-modal-header">
         <div class="cd-modal-titles">
-          <div class="cd-header-badge" style="background:#ECFDF5;color:#059669;">
+          <div class="cd-header-badge" style="background:var(--tint-green);color:var(--ink-green);">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h.5A2.5 2.5 0 0 0 23 9.5c0-1.4-1.1-2.5-2.5-2.5H20a2.7 2.7 0 0 0-1-2z"/>
               <circle cx="17.5" cy="9.5" r="1"/>
@@ -174,7 +174,7 @@
         </div>
       </div>
 
-      <footer class="modal-box__footer" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; background: #F8FAFC;">
+      <footer class="modal-box__footer" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); background: var(--bg-subtle);">
         <button type="button" class="btn btn--danger" id="deleteSavingsGoalBtn" style="display:none; color:#EF4444; border:1px solid rgba(239,68,68,0.2); background:transparent; border-radius:8px; padding:8px 14px; cursor:pointer;">Hedefi Sil</button>
         <div style="display: flex; gap: 10px; margin-left: auto;">
           <button type="button" class="btn btn--secondary" id="cancelSavingsGoalBtn" data-action="close-modal">Vazgeç</button>
@@ -199,7 +199,7 @@
 
       <header class="cd-modal-header">
         <div class="cd-modal-titles">
-          <div class="cd-header-badge" id="potTransferBadge" style="background:#ECFDF5;color:#059669;">
+          <div class="cd-header-badge" id="potTransferBadge" style="background:var(--tint-green);color:var(--ink-green);">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
               <path d="m7 16 5 5 5-5"/><path d="M12 21V3"/><path d="m17 8-5-5-5 5"/>
             </svg>
@@ -258,7 +258,7 @@
         </div>
       </div>
 
-      <footer class="modal-box__footer" style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; border-top: 1px solid #E2E8F0; background: #F8FAFC;">
+      <footer class="modal-box__footer" style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; border-top: 1px solid var(--border); background: var(--bg-subtle);">
         <button type="button" class="btn btn--secondary" id="cancelPotTransferBtn" data-action="close-modal">Vazgeç</button>
         <button type="submit" class="btn btn--primary" id="submitPotTransferBtn">Aktarımı Onayla</button>
       </footer>

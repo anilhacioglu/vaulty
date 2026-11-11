@@ -245,7 +245,7 @@
   <div class="modal-box modal-box--sm">
     <header class="modal-box__header">
       <div class="modal-box__titles">
-        <h3 class="modal-box__title" id="confirmDeleteDebtTitle" style="color: #DC2626; display: flex; align-items: center; gap: 8px;">
+        <h3 class="modal-box__title" id="confirmDeleteDebtTitle" style="color: var(--ink-red); display: flex; align-items: center; gap: 8px;">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
           </svg>
@@ -259,21 +259,21 @@
     </header>
 
     <div class="modal-box__body">
-      <div class="del-confirm-card" style="background:#FEF2F2;border:1px solid #FEE2E2;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;">
+      <div class="del-confirm-card" style="background:var(--tint-red);border:1px solid #FEE2E2;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;">
         <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-size: 13px; color: #64748B;">Kişi / Kurum:</span>
-          <strong id="delDebtParty" style="font-size: 15px; color: #0F172A;">—</strong>
+          <span style="font-size: 13px; color: var(--text-secondary);">Kişi / Kurum:</span>
+          <strong id="delDebtParty" style="font-size: 15px; color: var(--text-primary);">—</strong>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-size: 13px; color: #64748B;">Kalan Bakiye:</span>
-          <strong id="delDebtRemaining" class="mono" style="font-size: 16px; color: #DC2626;">—</strong>
+          <span style="font-size: 13px; color: var(--text-secondary);">Kalan Bakiye:</span>
+          <strong id="delDebtRemaining" class="mono" style="font-size: 16px; color: var(--ink-red);">—</strong>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-size: 12px; color: #64748B;">Kayıt Türü:</span>
+          <span style="font-size: 12px; color: var(--text-secondary);">Kayıt Türü:</span>
           <span id="delDebtKindBadge" class="sd-kind-badge sd-kind-badge--pay">—</span>
         </div>
       </div>
-      <p style="font-size: 12.5px; color: #64748B; margin-top: 14px; line-height: 1.45;">
+      <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 14px; line-height: 1.45;">
         Bu kaydı sildiğinizde, kasa defterinizden tamamen kaldırılacak ve hesap özetleriniz otomatik olarak yeniden hesaplanacaktır.
       </p>
     </div>

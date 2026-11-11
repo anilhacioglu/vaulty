@@ -103,7 +103,7 @@
 .dash-donut__center span {
   font-size: 10px;
   font-weight: 700;
-  color: #64748B;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 2px;
@@ -112,7 +112,7 @@
 .dash-donut__center strong {
   font-size: 12px;
   font-weight: 700;
-  color: #0F172A;
+  color: var(--text-primary);
   white-space: nowrap;
   max-width: 106px;
   overflow: hidden;
@@ -147,7 +147,7 @@
 }
 
 .dash-legend__name {
-  color: #334155;
+  color: var(--text-2);
   font-weight: 500;
   flex: 1;
   white-space: nowrap;
@@ -156,12 +156,12 @@
 }
 
 .dash-legend__pct {
-  color: #64748B;
+  color: var(--text-secondary);
   font-size: 11px;
 }
 
 .dash-legend__val {
-  color: #0F172A;
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 11px;
 }

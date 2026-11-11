@@ -10,8 +10,8 @@
   position: relative !important;
   z-index: 50 !important;
   box-sizing: border-box !important;
-  background-color: #F8FAFC !important;
-  border-right: 1px solid #E2E8F0 !important;
+  background-color: var(--bg-subtle) !important;
+  border-right: 1px solid var(--border) !important;
   padding: 20px 16px 16px 16px !important;
   display: flex !important;
   flex-direction: column !important;
@@ -48,7 +48,7 @@ body:not(.is-maximized) .sidebar {
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1;
 }
 
@@ -72,7 +72,7 @@ body:not(.is-maximized) .sidebar {
   border-radius: 10px;
   border: 1px solid transparent;
   background-color: transparent;
-  color: #475569;
+  color: var(--text-3);
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
@@ -96,20 +96,20 @@ body:not(.is-maximized) .sidebar {
 }
 
 .nav__item:hover {
-  background-color: #F1F5F9;
-  color: #0F172A;
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .nav__item.is-active {
-  background-color: #FFFFFF;
-  border-color: #E2E8F0;
+  background-color: var(--bg-surface);
+  border-color: var(--border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  color: #2563EB;
+  color: var(--ink-blue);
   font-weight: 600;
 }
 
 .nav__item.is-active svg {
-  color: #2563EB;
+  color: var(--ink-blue);
 }
 
 .nav__item.is-active::before {
@@ -140,9 +140,9 @@ body:not(.is-maximized) .sidebar {
   height: 20px;
   padding: 0 6px;
   border-radius: 9999px;
-  background-color: #FEF3C7;
+  background-color: var(--tint-amber);
   border: 1px solid #FDE68A;
-  color: #D97706;
+  color: var(--ink-amber);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -164,9 +164,9 @@ body:not(.is-maximized) .sidebar {
   gap: 8px;
   padding: 0 10px;
   border-radius: 10px;
-  border: 1px solid #E2E8F0;
-  background-color: #FFFFFF;
-  color: #475569;
+  border: 1px solid var(--border);
+  background-color: var(--bg-surface);
+  color: var(--text-3);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -175,16 +175,16 @@ body:not(.is-maximized) .sidebar {
 }
 
 .sidebar-privacy-btn:hover {
-  background-color: #F8FAFC;
-  border-color: #CBD5E1;
-  color: #0F172A;
+  background-color: var(--bg-subtle);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
 }
 
 .sidebar-privacy-btn .privacy-btn-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #64748B;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
@@ -202,29 +202,29 @@ body:not(.is-maximized) .sidebar {
   font-size: 10px;
   font-weight: 700;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #64748B;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
   border-radius: 4px;
   line-height: 1;
 }
 
 /* Aktif Durum */
 body.privacy-active .sidebar-privacy-btn {
-  background-color: #EFF6FF;
+  background-color: var(--tint-blue);
   border-color: #93C5FD;
-  color: #2563EB;
+  color: var(--ink-blue);
   font-weight: 600;
 }
 
 body.privacy-active .sidebar-privacy-btn .privacy-btn-icon {
-  color: #2563EB;
+  color: var(--ink-blue);
 }
 
 body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
-  background-color: #DBEAFE;
-  border-color: #BFDBFE;
-  color: #1D4ED8;
+  background-color: var(--tint-blue-2);
+  border-color: var(--border-blue-2);
+  color: var(--ink-blue);
 }
 
 /* Alt Kenara Sabitlenmiş Kullanıcı Profili Kartı */
@@ -238,9 +238,9 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
   width: 100%;
   height: 52px;
   padding: 8px 12px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
   display: flex;
   align-items: center;
@@ -252,8 +252,8 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
 
 .user-card:hover,
 .user-card[aria-expanded="true"] {
-  border-color: #CBD5E1;
-  background-color: #FFFFFF;
+  border-color: var(--border-hover);
+  background-color: var(--bg-surface);
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
 }
 
@@ -261,12 +261,12 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   overflow: hidden;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  background-color: #EFF6FF;
+  background-color: var(--tint-blue);
 }
 
 .user-card__avatar svg,
@@ -289,7 +289,7 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
 .user-card__name {
   font-size: 13px;
   font-weight: 700;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
@@ -299,7 +299,7 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
 .user-card__sub {
   font-size: 11px;
   font-weight: 400;
-  color: #64748B;
+  color: var(--text-secondary);
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
@@ -307,7 +307,7 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
 }
 
 .user-card__more {
-  color: #94A3B8;
+  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -317,7 +317,7 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
 
 .user-card:hover .user-card__more,
 .user-card[aria-expanded="true"] .user-card__more {
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .user-popover {
@@ -325,8 +325,8 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
   left: 0;
   right: 0;
   bottom: calc(100% + 8px);
-  background-color: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 6px;
   box-shadow:
@@ -360,7 +360,7 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #0F172A;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   display: flex;
@@ -371,35 +371,35 @@ body.privacy-active .sidebar-privacy-btn .privacy-kbd-hint {
 }
 
 .popover-item svg {
-  color: #64748B;
+  color: var(--text-secondary);
   flex-shrink: 0;
   transition: color 120ms ease;
 }
 
 .popover-item:hover {
-  background-color: #F8FAFC;
+  background-color: var(--bg-subtle);
 }
 
 .popover-item:hover svg {
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .popover-item--danger {
-  color: #E11D48;
+  color: var(--ink-red);
 }
 
 .popover-item--danger svg {
-  color: #E11D48;
+  color: var(--ink-red);
 }
 
 .popover-item--danger:hover {
-  background-color: #FFF1F2;
-  color: #E11D48;
+  background-color: var(--tint-red);
+  color: var(--ink-red);
 }
 
 .popover-divider {
   height: 1px;
-  background-color: #E2E8F0;
+  background-color: var(--bg-track);
   margin: 5px 4px;
 }
 

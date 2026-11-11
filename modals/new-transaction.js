@@ -376,7 +376,7 @@
       const newPct = Math.min(100, Math.round((newDebt / limit) * 100));
       txLivePreview.innerHTML = `
         <span><strong>${esc(acc.nickname)}</strong> Güncel Borç: <span class="mono">${tryFmt(oldDebt)} → <strong>${tryFmt(newDebt)}</strong></span></span>
-        <span class="mono" style="color:#059669;font-weight:600">Yeni Doluluk: %${newPct}</span>
+        <span class="mono" style="color:var(--ink-green);font-weight:600">Yeni Doluluk: %${newPct}</span>
       `;
       return;
     }

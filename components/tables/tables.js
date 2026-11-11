@@ -273,7 +273,7 @@
             : '';
 
           const acc = State.getAccountById(t.accountId);
-          const last4Tag = !isTransfer && acc && acc.last4 ? `<span class="tx-last4 mono">[ ${esc(acc.last4)} ]</span>` : '';
+          const last4Tag = !isTransfer && acc && acc.last4 ? `<span class="tx-last4 mono">•• ${esc(acc.last4)}</span>` : '';
           const flowCls = isPositive ? 'tx-flow--in' : isTransfer ? 'tx-flow--transfer' : isCardPay ? 'tx-flow--card' : 'tx-flow--out';
           const amtSign = isPositive ? '+' : isTransfer ? '⇄ ' : '-';
           const amtCls = isPositive ? 'is-income' : isTransfer ? 'is-transfer' : '';
@@ -392,7 +392,7 @@
         const pages = getPaginationPages(txViewPage, totalPages);
         pages.forEach((p) => {
           if (p === '...') {
-            pageButtonsHtml += `<span class="tx-page-ellipsis" style="padding:0 4px;color:#94A3B8;font-size:13px;font-weight:600;">…</span>`;
+            pageButtonsHtml += `<span class="tx-page-ellipsis" style="padding:0 4px;color:var(--text-muted);font-size:13px;font-weight:600;">…</span>`;
           } else {
             pageButtonsHtml += `
               <button type="button" class="tx-page-btn ${p === txViewPage ? 'is-active' : ''}" data-tx-page="${p}" aria-current="${p === txViewPage ? 'page' : 'false'}">
@@ -439,7 +439,7 @@
 
       if (recent.length === 0) {
         recentHost.innerHTML = `
-          <li style="padding:28px 16px;text-align:center;color:#64748B;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <li style="padding:28px 16px;text-align:center;color:var(--text-secondary);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:10px;">
             <span>Henüz kayıtlı bir işlem hareketi yok.</span>
             <button type="button" class="btn btn--secondary btn--sm" id="emptyDashAddTxBtn">+ İlk İşlemi Ekle</button>
           </li>`;
@@ -511,7 +511,7 @@
       if (filtered.length === 0) {
         host.innerHTML = `
           <div class="dc-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;gap:12px;">
-            <p style="color:#64748B;font-size:13px;margin:0;">Bu görünümde kayıtlı alacak veya borç bulunmuyor.</p>
+            <p style="color:var(--text-secondary);font-size:13px;margin:0;">Bu görünümde kayıtlı alacak veya borç bulunmuyor.</p>
             <button type="button" class="dc-add-btn" id="emptyDebtAddBtn" data-action="open-debt-modal" style="margin-top:6px;">+ Yeni Kayıt Ekle</button>
           </div>`;
         document.getElementById('emptyDebtAddBtn')?.addEventListener('click', () => {
@@ -532,15 +532,19 @@
           const pct = totalNum > 0 ? Math.min(100, Math.round((paid / totalNum) * 100)) : 0;
           const due = formatDuePill(item);
           const fillCls = item.kind === 'receivable' ? 'dc-progress-fill--rec' : 'dc-progress-fill--pay';
+          const kindRowCls = isArchived(item) ? 'dc-row--done' : (item.kind === 'receivable' ? 'dc-row--rec' : 'dc-row--pay');
+          const kindTag = item.kind === 'receivable'
+            ? '<span class="dc-kind-tag dc-kind-tag--rec">Alacak</span>'
+            : '<span class="dc-kind-tag dc-kind-tag--pay">Borç</span>';
           const selectedCls = item.id === State.activeDrawerItemId ? 'is-selected' : '';
           const iconMeta = getLedgerPartyIconMeta(item);
 
           return `
-          <article class="dc-row ${selectedCls}" data-id="${item.id}" tabindex="0" role="button" aria-label="${esc(item.party)} detaylarını aç">
+          <article class="dc-row ${kindRowCls} ${selectedCls}" data-id="${item.id}" tabindex="0" role="button" aria-label="${esc(item.party)} detaylarını aç">
             <div class="dc-col-party">
               <span class="dc-avatar ${iconMeta.cls}" aria-hidden="true">${iconMeta.svg}</span>
               <div class="dc-party-info">
-                <span class="dc-party-name">${esc(item.party)}</span>
+                <span class="dc-party-name">${esc(item.party)}${kindTag}</span>
                 <span class="dc-party-meta">${esc(item.category)} • <span class="mono">${item.createdAt || ''}</span></span>
               </div>
             </div>

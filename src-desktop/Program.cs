@@ -113,7 +113,7 @@ public class MainWindow : Form
 
     public MainWindow()
     {
-        Text = "Vaulty v1.5.1";
+        Text = "Vaulty v1.6.0";
         MinimumSize = new Size(1100, 720);
         MaximumSize = Size.Empty;
         Size = new Size(1920, 1080);
@@ -293,7 +293,7 @@ public class MainWindow : Form
                     vault_encrypted = true,
                     algorithm = "AES-256-GCM",
                     key_protection = "DPAPI-SHA256",
-                    version = "1.5.1",
+                    version = "1.6.0",
                     updated_at = DateTime.UtcNow.ToString("o"),
                     payload = encryptedData
                 };

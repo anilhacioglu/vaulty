@@ -22,16 +22,21 @@
     if (!host) return;
 
     const goals = State.getSavingsGoals ? State.getSavingsGoals() : (State.savingsGoals || []);
+    const subEl = document.getElementById('potsSummarySub');
+    if (subEl) {
+      const totalSaved = round2(goals.reduce((s, g) => s + Number(g.currentAmount || 0), 0));
+      subEl.textContent = goals.length ? `${goals.length} hedef · Toplam ${tryFmt(totalSaved)}` : 'Aktif tasarruf hedefleri';
+    }
 
     if (goals.length === 0) {
       host.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; background: #FFFFFF; border: 1px dashed #CBD5E1; border-radius: 14px;">
-          <div style="width: 48px; height: 48px; border-radius: 50%; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h.5A2.5 2.5 0 0 0 23 9.5c0-1.4-1.1-2.5-2.5-2.5H20a2.7 2.7 0 0 0-1-2z"/><circle cx="17.5" cy="9.5" r="1"/></svg>
+        <div class="pot-empty">
+          <div class="pot-empty__icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h.5A2.5 2.5 0 0 0 23 9.5c0-1.4-1.1-2.5-2.5-2.5H20a2.7 2.7 0 0 0-1-2z"/><circle cx="17.5" cy="9.5" r="1"/></svg>
           </div>
-          <h3 style="font-size: 16px; font-weight: 700; color: #0F172A; margin: 0 0 4px;">Henüz Birikim Hedefi Tanımlanmadı</h3>
-          <p style="font-size: 13px; color: #64748B; margin: 0 0 16px;">Acil durum fonu, teknoloji, tatil veya ev peşinatı gibi hedefleriniz için sanal kumbara oluşturun.</p>
-          <button type="button" class="btn btn--primary" id="emptyAddSavingsGoalBtn" style="padding: 8px 16px; border-radius: 8px; font-weight: 600;">+ İlk Kumbarayı Oluştur</button>
+          <h3>Henüz Kumbara Oluşturulmadı</h3>
+          <p>Acil durum fonu veya özel hedefler için sanal kumbara açın.</p>
+          <button type="button" class="pots-add-btn" id="emptyAddSavingsGoalBtn">+ İlk Kumbarayı Oluştur</button>
         </div>`;
       return;
     }
@@ -43,9 +48,9 @@
         const pct = Math.min(100, Math.round((cur / tgt) * 100));
         const remaining = Math.max(0, round2(tgt - cur));
         const iconSvg = ICON_SVGS[g.icon] || ICON_SVGS.star;
-        const color = g.color || '#10B981';
+        const color = g.color || '#2F6BFF';
 
-        let dateDisplay = 'Belirtilmedi';
+        let dateDisplay = 'Hedef tarih yok';
         if (g.targetDate) {
           try {
             const d = new Date(g.targetDate);
@@ -58,45 +63,37 @@
         }
 
         return `
-          <article class="card pot-card" style="padding:18px; background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <div style="width:40px; height:40px; border-radius:10px; background:${color}15; color:${color}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    ${iconSvg}
-                  </div>
-                  <div>
-                    <h3 style="font-size:15px; font-weight:700; color:#0F172A; margin:0;">${esc(g.name)}</h3>
-                    <span style="font-size:12px; color:#64748B;">Hedef: ${dateDisplay}</span>
-                  </div>
+          <article class="pot-card">
+            <div class="pot-card__top">
+              <div class="pot-card__ident">
+                <div class="pot-card__icon" style="background:${color}1a;color:${color};">
+                  ${iconSvg}
                 </div>
-                <button type="button" class="btn btn--ghost edit-pot-btn" data-pot-id="${g.id}" style="padding:4px 8px; font-size:12px; color:#64748B; border:none; background:none; cursor:pointer;" title="Düzenle">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </button>
-              </div>
-
-              <div style="margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
-                  <span class="mono" style="font-size:19px; font-weight:800; color:#0F172A;">${tryFmt(cur)}</span>
-                  <span class="mono" style="font-size:13px; color:#64748B; font-weight:600;">/ ${tryFmt(tgt)}</span>
-                </div>
-                <div style="height:8px; width:100%; background:#F1F5F9; border-radius:999px; overflow:hidden;">
-                  <div style="height:100%; width:${pct}%; background:${color}; border-radius:999px; transition:width 0.3s ease;"></div>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:#64748B;">
-                  <span class="mono" style="font-weight:700; color:${color};">%${pct} Tamamlandı</span>
-                  <span class="mono">${remaining <= 0 ? '🎉 Hedefe Ulaşıldı!' : `Kalan: ${tryFmt(remaining)}`}</span>
+                <div class="pot-card__titles">
+                  <h3>${esc(g.name)}</h3>
+                  <span>${dateDisplay}</span>
                 </div>
               </div>
+              <button type="button" class="pot-edit-btn edit-pot-btn" data-pot-id="${g.id}" title="Düzenle" aria-label="${esc(g.name)} düzenle">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; padding-top:12px; border-top:1px solid #F1F5F9;">
-              <button type="button" class="btn btn--secondary pot-withdraw-btn" data-pot-id="${g.id}" style="padding:7px 10px; font-size:12px; font-weight:600; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; gap:4px; border:1px solid #CBD5E1; background:#FFFFFF; cursor:pointer;">
-                <span>− Para Çek</span>
-              </button>
-              <button type="button" class="btn btn--primary pot-deposit-btn" data-pot-id="${g.id}" style="padding:7px 10px; font-size:12px; font-weight:600; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; gap:4px; background:${color}; border:none; color:#FFFFFF; cursor:pointer;">
-                <span>+ Para Ekle</span>
-              </button>
+            <div class="pot-card__nums">
+              <span class="pot-card__cur mono" data-privacy-blur>${tryFmt(cur)}</span>
+              <span class="pot-card__tgt mono" data-privacy-blur>/ ${tryFmt(tgt)}</span>
+            </div>
+
+            <div class="pot-card__track">
+              <div class="pot-card__fill" style="width:${pct}%;background:${color};"></div>
+            </div>
+
+            <div class="pot-card__foot">
+              <span class="pot-card__pct mono" style="color:${color};">%${pct} · ${remaining <= 0 ? 'Tamamlandı' : `Kalan ${tryFmt(remaining)}`}</span>
+              <div class="pot-card__actions">
+                <button type="button" class="pot-btn pot-withdraw-btn" data-pot-id="${g.id}" title="Para Çek">− Çek</button>
+                <button type="button" class="pot-btn pot-btn--add pot-deposit-btn" data-pot-id="${g.id}" style="background:${color};" title="Para Ekle">+ Ekle</button>
+              </div>
             </div>
           </article>
         `;
